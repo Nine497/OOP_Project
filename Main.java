@@ -1,0 +1,250 @@
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        JSONParser parser = new JSONParser();
+        List<Product> products = new ArrayList<>();
+        try {
+            // อ่านข้อมูลพนักงานจากไฟล์ JSON
+            FileReader employeeReader = new FileReader("Employees.json");
+            JSONArray employeesJsonArray = (JSONArray) parser.parse(employeeReader);
+            Employee[] employees = new Employee[employeesJsonArray.size()];
+
+            for (int i = 0; i < employeesJsonArray.size(); i++) {
+                JSONObject employeeObject = (JSONObject) employeesJsonArray.get(i);
+                String id = (String) employeeObject.get("id");
+                String name = (String) employeeObject.get("name");
+                String position = (String) employeeObject.get("position");
+                String username = (String) employeeObject.get("username");
+                String password = (String) employeeObject.get("password");
+
+                employees[i] = new Employee(id, name, position, username, password);
+            }
+
+            // อ่านข้อมูลสินค้า
+            FileReader productReader = new FileReader("Products.json");
+            JSONArray productsJsonArray = (JSONArray) parser.parse(productReader);
+
+            for (int i = 0; i < productsJsonArray.size(); i++) {
+                JSONObject productObject = (JSONObject) productsJsonArray.get(i);
+                String productId = (String) productObject.get("productId");
+                String productName = (String) productObject.get("name");
+                double price = (Double) productObject.get("price");
+                long stock = (Long) productObject.get("stock");
+
+                Product product = new Product(productId, productName, price, (int) stock);
+                products.add(product);
+            }
+
+            // เริ่มต้นการทำงานของระบบ
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("=== Welcome to the System ===");
+            System.out.print("Enter username: ");
+            String inputUsername = scanner.nextLine();
+
+            System.out.print("Enter password: ");
+            String inputPassword = scanner.nextLine();
+
+            boolean isLoginSuccessful = false;
+            Employee loggedInEmployee = null;
+
+            for (Employee emp : employees) {
+                if (emp.login(inputUsername, inputPassword)) {
+                    System.out.println("Login successful! Welcome " + emp.getName());
+                    isLoginSuccessful = true;
+                    loggedInEmployee = emp;
+                    break;
+                }
+            }
+
+            if (!isLoginSuccessful) {
+                System.out.println("Login failed! Incorrect username or password.");
+            } else {
+                boolean exit = false;
+                while (!exit) {
+                    clearScreen();
+                    System.out.println("\n=== Main Menu ===");
+                    System.out.println("1. Manage Products");
+                    System.out.println("2. Purchase Products");
+                    System.out.println("3. Manage Personal Information");
+                    System.out.println("4. Logout");
+                    System.out.print("Choose an option: ");
+                    int choice = scanner.nextInt();
+                    scanner.nextLine(); // เพื่อเคลียร์ new line character
+
+                    switch (choice) {
+                        case 1:
+                            clearScreen();
+                            manageProducts(scanner, products);
+                            break;
+                        case 2:
+                            clearScreen();
+                            purchaseProducts(scanner, products, loggedInEmployee);
+                            break;
+                        case 3:
+                            clearScreen();
+                            managePersonalInfo(scanner, loggedInEmployee);
+                            break;
+                        case 4:
+                            System.out.println("Logging out...");
+                            exit = true;
+                            break;
+                        default:
+                            System.out.println("Invalid option. Please try again.");
+                            break;
+                    }
+                }
+            }
+
+            scanner.close();
+
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ฟังก์ชันสำหรับจัดการสินค้า
+    private static void manageProducts(Scanner scanner, List<Product> products) {
+        System.out.println("=== Manage Products ===");
+        for (Product product : products) {
+            System.out.println(product);
+        }
+    }
+
+    // ฟังก์ชันสำหรับการซื้อสินค้า
+    private static void purchaseProducts(Scanner scanner, List<Product> products, Employee employee) {
+        System.out.println("=== Purchase Products ===");
+
+        List<Product> purchasedProducts = new ArrayList<>();
+        List<Integer> purchasedQuantities = new ArrayList<>();
+
+        boolean continuePurchasing = true;
+        while (continuePurchasing) {
+            System.out.println("\nAvailable Products:");
+            for (int i = 0; i < products.size(); i++) {
+                Product product = products.get(i);
+                System.out.println("Product ID: " + product.getProductId() + ", Name: " + product.getName()
+                        + ", Price: " + product.getPrice() + " THB, Stock: " + product.getStock());
+            }
+
+            System.out.print("Choose a product to purchase (by Product ID) or type 'done' to finish: ");
+            String productId = scanner.nextLine();
+
+            if (productId.equalsIgnoreCase("done")) {
+                continuePurchasing = false;
+                System.out.println("Finished selecting products.");
+            } else {
+                Product selectedProduct = null;
+
+                for (int i = 0; i < products.size(); i++) {
+                    Product product = products.get(i);
+                    if (product.getProductId().equalsIgnoreCase(productId)) {
+                        selectedProduct = product;
+                        break;
+                    }
+                }
+
+                if (selectedProduct != null) {
+                    System.out.print("Enter quantity to purchase: ");
+                    try {
+                        int quantity = Integer.parseInt(scanner.nextLine());
+
+                        if (quantity > selectedProduct.getStock()) {
+                            System.out.println("Not enough stock available.");
+                        } else if (quantity <= 0) {
+                            System.out.println("Please enter a valid quantity.");
+                        } else {
+                            purchasedProducts.add(selectedProduct);
+                            purchasedQuantities.add(quantity);
+                            System.out.println("Added to cart: " + quantity + " of " + selectedProduct.getName());
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid quantity. Please enter a valid number.");
+                    }
+                } else {
+                    System.out.println("Invalid Product ID. Please try again.");
+                }
+            }
+        }
+
+        // สร้าง Transaction สำหรับสินค้าทั้งหมดที่ซื้อ
+        if (!purchasedProducts.isEmpty()) {
+            String transactionId = "T" + System.currentTimeMillis();
+            Transaction transaction = new Transaction(transactionId, employee, purchasedProducts, purchasedQuantities);
+
+            // อัปเดตข้อมูลสินค้าลงไฟล์ JSON
+            updateProductsJson(products);
+        } else {
+            System.out.println("No items were purchased.");
+        }
+    }
+
+    // ฟังก์ชันสำหรับอัปเดตสินค้าในไฟล์ JSON
+    private static void updateProductsJson(List<Product> products) {
+        JSONArray productsJsonArray = new JSONArray();
+
+        for (Product product : products) {
+            JSONObject productObject = new JSONObject();
+            productObject.put("productId", product.getProductId());
+            productObject.put("name", product.getName());
+            productObject.put("price", product.getPrice());
+            productObject.put("stock", product.getStock());
+            productsJsonArray.add(productObject);
+        }
+
+        try (FileWriter file = new FileWriter("Products.json")) {
+            file.write(productsJsonArray.toJSONString());
+            file.flush();
+            System.out.println("Products.json has been updated.");
+        } catch (IOException e) {
+            System.out.println("An error occurred while updating the products JSON file: " + e.getMessage());
+        }
+    }
+
+    // ฟังก์ชันสำหรับจัดการข้อมูลส่วนตัว
+    private static void managePersonalInfo(Scanner scanner, Employee employee) {
+        System.out.println("=== Manage Personal Information ===");
+        System.out.println("Current Information: " + employee);
+        System.out.println("Would you like to update your position? (y/n): ");
+        String response = scanner.nextLine();
+        if (response.equalsIgnoreCase("y")) {
+            System.out.print("Enter new position: ");
+            String newPosition = scanner.nextLine();
+            employee.setPosition(newPosition);
+            System.out.println("Position updated successfully.");
+        } else {
+            System.out.println("No changes made.");
+        }
+    }
+
+    public final static void clearScreen() {
+        try {
+            final String os = System.getProperty("os.name");
+
+            if (os.contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+            }
+        } catch (final Exception e) {
+            System.out.println("Error while clearing console: " + e.getMessage());
+        }
+    }
+}

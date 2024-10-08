@@ -1,0 +1,24 @@
+[
+    {
+      "id": "E001",
+      "name": "John Doe",
+      "position": "Cashier",
+      "username": "john_doe",
+      "password": "password123"
+    },
+    {
+      "id": "E002",
+      "name": "Jane Smith",
+      "position": "Manager",
+      "username": "jane_smith",
+      "password": "manager456"
+    },
+    {
+      "id": "E003",
+      "name": "Emily Davis",
+      "position": "Sales Associate",
+      "username": "emily_davis",
+      "password": "sales789"
+    }
+  ]
+  
