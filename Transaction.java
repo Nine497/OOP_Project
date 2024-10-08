@@ -78,6 +78,37 @@ public class Transaction {
         }
     }
 
+    // สร้างบิลสำหรับการซื้อสินค้าหลายรายการและคืนค่าเป็น String
+    public String getBillContent() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = dateTime.format(formatter);
+
+        StringBuilder billContent = new StringBuilder();
+        billContent.append("=== Transaction Bill ===\n");
+        billContent.append("Transaction ID: ").append(transactionId).append("\n");
+        billContent.append("Employee: ").append(employee.getName()).append("\n");
+        billContent.append("Date and Time: ").append(formattedDateTime).append("\n");
+        billContent.append("Purchased Items:\n");
+
+        double totalAmount = 0.0;
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            int quantity = quantities.get(i);
+            double itemTotal = product.getPrice() * quantity;
+            totalAmount += itemTotal;
+
+            billContent.append("- ").append(product.getName())
+                       .append(", Quantity: ").append(quantity)
+                       .append(", Price per unit: ").append(product.getPrice()).append(" THB")
+                       .append(", Total: ").append(itemTotal).append(" THB\n");
+        }
+
+        billContent.append("Grand Total: ").append(totalAmount).append(" THB\n");
+        billContent.append("==========================\n");
+
+        return billContent.toString();
+    }
+
     @Override
     public String toString() {
         return "Transaction ID: " + transactionId +

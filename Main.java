@@ -184,16 +184,24 @@ public class Main {
             }
         }
 
-        // สร้าง Transaction สำหรับสินค้าทั้งหมดที่ซื้อ
+// สร้าง Transaction สำหรับสินค้าทั้งหมดที่ซื้อ
         if (!purchasedProducts.isEmpty()) {
             String transactionId = "T" + System.currentTimeMillis();
             Transaction transaction = new Transaction(transactionId, employee, purchasedProducts, purchasedQuantities);
+            clearScreen();
+            System.out.println("");
+            // แสดงบิลก่อนกลับไปที่เมนูหลัก
+            System.out.println(transaction.getBillContent());
 
             // อัปเดตข้อมูลสินค้าลงไฟล์ JSON
             updateProductsJson(products);
+
+            System.out.println("Press Enter to return to the main menu...");
+            scanner.nextLine();
         } else {
             System.out.println("No items were purchased.");
         }
+
     }
 
     // ฟังก์ชันสำหรับอัปเดตสินค้าในไฟล์ JSON
@@ -212,7 +220,6 @@ public class Main {
         try (FileWriter file = new FileWriter("Products.json")) {
             file.write(productsJsonArray.toJSONString());
             file.flush();
-            System.out.println("Products.json has been updated.");
         } catch (IOException e) {
             System.out.println("An error occurred while updating the products JSON file: " + e.getMessage());
         }

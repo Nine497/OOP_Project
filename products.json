@@ -1,1 +1,1 @@
-[{"productId":"P001","price":45.0,"name":"Milk","stock":100},{"productId":"P002","price":35.0,"name":"Bread","stock":40},{"productId":"P003","price":60.0,"name":"Eggs","stock":145},{"productId":"P004","price":150.0,"name":"Butter","stock":30}]
+[{"productId":"P001","price":45.0,"name":"Milk","stock":70},{"productId":"P002","price":35.0,"name":"Bread","stock":40},{"productId":"P003","price":60.0,"name":"Eggs","stock":125},{"productId":"P004","price":150.0,"name":"Butter","stock":30}]
