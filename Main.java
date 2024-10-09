@@ -120,11 +120,144 @@ public class Main {
         }
     }
 
-    // ฟังก์ชันสำหรับจัดการสินค้า
+// ฟังก์ชันสำหรับจัดการสินค้า
     private static void manageProducts(Scanner scanner, List<Product> products) {
-        System.out.println("=== Manage Products ===");
-        for (Product product : products) {
-            System.out.println(product);
+        boolean backToMainMenu = false;
+
+        while (!backToMainMenu) {
+            clearScreen();
+            System.out.println("=== Manage Products ===");
+            System.out.println("1. Add Product");
+            System.out.println("2. Remove Product");
+            System.out.println("3. Edit Product");
+            System.out.println("4. View Products");
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    addProduct(scanner, products);
+                    break;
+                case 2:
+                    removeProduct(scanner, products);
+                    break;
+                case 3:
+                    editProduct(scanner, products);
+                    break;
+                case 4:
+                    viewProducts(products);
+                    break;
+                case 0:
+                    backToMainMenu = true;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+
+            if (!backToMainMenu) {
+                System.out.println("\nPress Enter to return to the Manage Products menu...");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private static void addProduct(Scanner scanner, List<Product> products) {
+        System.out.println("\n=== Add Product ===");
+        System.out.print("Enter Product ID: ");
+        String productId = scanner.nextLine();
+        System.out.print("Enter Product Name: ");
+        String productName = scanner.nextLine();
+        System.out.print("Enter Product Price: ");
+        double price = scanner.nextDouble();
+        System.out.print("Enter Product Stock: ");
+        int stock = scanner.nextInt();
+        scanner.nextLine(); // Consume newline character
+
+        Product newProduct = new Product(productId, productName, price, stock);
+        products.add(newProduct);
+        updateProductsJson(products);
+        System.out.println("Product added successfully.");
+    }
+
+    private static void removeProduct(Scanner scanner, List<Product> products) {
+        System.out.println("\n=== Remove Product ===");
+        System.out.print("Enter Product ID to remove: ");
+        String productId = scanner.nextLine();
+
+        boolean removed = false;
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            if (product.getProductId().equalsIgnoreCase(productId)) {
+                products.remove(i);
+                updateProductsJson(products);
+                System.out.println("Product removed successfully.");
+                removed = true;
+                break;
+            }
+        }
+
+        if (!removed) {
+            System.out.println("Product not found.");
+        }
+    }
+
+    private static void editProduct(Scanner scanner, List<Product> products) {
+        System.out.println("\n=== Edit Product ===");
+        System.out.print("Enter Product ID to edit: ");
+        String productId = scanner.nextLine();
+
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            if (product.getProductId().equalsIgnoreCase(productId)) {
+                System.out.println("Editing Product: " + product.getName());
+                System.out.print("Enter new name (or press Enter to keep current): ");
+                String newName = scanner.nextLine();
+                System.out.print("Enter new price (or press Enter to keep current): ");
+                String newPrice = scanner.nextLine();
+                System.out.print("Enter new stock (or press Enter to keep current): ");
+                String newStock = scanner.nextLine();
+
+                if (!newName.isEmpty()) {
+                    product.setName(newName);
+                }
+                if (!newPrice.isEmpty()) {
+                    try {
+                        double price = Double.parseDouble(newPrice);
+                        product.setPrice(price);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid price. Keeping the current price.");
+                    }
+                }
+                if (!newStock.isEmpty()) {
+                    try {
+                        int stock = Integer.parseInt(newStock);
+                        product.setStock(stock);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid stock. Keeping the current stock.");
+                    }
+                }
+
+                updateProductsJson(products);
+                System.out.println("Product updated successfully.");
+                return;
+            }
+        }
+
+        System.out.println("Product not found.");
+    }
+
+    private static void viewProducts(List<Product> products) {
+        System.out.println("\n=== View Products ===");
+        if (products.isEmpty()) {
+            System.out.println("No products available.");
+        } else {
+            for (int i = 0; i < products.size(); i++) {
+                Product product = products.get(i);
+                System.out.println("ID: " + product.getProductId() + ", Name: " + product.getName()
+                        + ", Price: " + product.getPrice() + " THB, Stock: " + product.getStock());
+            }
         }
     }
 
