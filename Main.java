@@ -11,15 +11,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class Main {
 
     public static void main(String[] args) {
         JSONParser parser = new JSONParser();
         List<Product> products = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+
         try {
-            // อ่านข้อมูลพนักงานจากไฟล์ JSON
-            FileReader employeeReader = new FileReader("Employees.json");
+            // อ่านข้อมูลพนักงาน
+            FileReader employeeReader = new FileReader("employees.json");
             JSONArray employeesJsonArray = (JSONArray) parser.parse(employeeReader);
             Employee[] employees = new Employee[employeesJsonArray.size()];
 
@@ -50,73 +53,75 @@ public class Main {
             }
 
             // เริ่มต้นการทำงานของระบบ
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("=== Welcome to the System ===");
-            System.out.print("Enter username: ");
-            String inputUsername = scanner.nextLine();
+            while (true) {
+                System.out.println("\n=== Welcome to the System ===");
+                System.out.print("Enter username: ");
+                String inputUsername = scanner.nextLine();
 
-            System.out.print("Enter password: ");
-            String inputPassword = scanner.nextLine();
+                System.out.print("Enter password: ");
+                String inputPassword = scanner.nextLine();
 
-            boolean isLoginSuccessful = false;
-            Employee loggedInEmployee = null;
+                boolean isLoginSuccessful = false;
+                Employee loggedInEmployee = null;
 
-            for (Employee emp : employees) {
-                if (emp.login(inputUsername, inputPassword)) {
-                    System.out.println("Login successful! Welcome " + emp.getName());
-                    isLoginSuccessful = true;
-                    loggedInEmployee = emp;
-                    break;
+                for (int i = 0; i < employees.length; i++) {
+                    Employee emp = employees[i];
+                    if (emp.login(inputUsername, inputPassword)) {
+                        System.out.println("Login successful! Welcome " + emp.getName());
+                        isLoginSuccessful = true;
+                        loggedInEmployee = emp;
+                        break;
+                    }
                 }
-            }
 
-            if (!isLoginSuccessful) {
-                System.out.println("Login failed! Incorrect username or password.");
-            } else {
-                boolean exit = false;
-                while (!exit) {
+                if (!isLoginSuccessful) {
                     clearScreen();
-                    System.out.println("\n=== Main Menu ===");
-                    System.out.println("1. Manage Products");
-                    System.out.println("2. Purchase Products");
-                    System.out.println("3. Manage Personal Information");
-                    System.out.println("4. Logout");
-                    System.out.print("Choose an option: ");
-                    int choice = scanner.nextInt();
-                    scanner.nextLine(); // เพื่อเคลียร์ new line character
+                    System.out.println("\nLogin failed! Incorrect username or password.");
+                } else {
+                    boolean exit = false;
+                    while (!exit) {
+                        clearScreen();
+                        System.out.println("\n=== Main Menu ===");
+                        System.out.println("1. Manage Products");
+                        System.out.println("2. Purchase Products");
+                        System.out.println("3. Manage Personal Information");
+                        System.out.println("4. Logout");
+                        System.out.print("Choose an option: ");
+                        int choice = scanner.nextInt();
+                        scanner.nextLine();
 
-                    switch (choice) {
-                        case 1:
-                            clearScreen();
-                            manageProducts(scanner, products);
-                            break;
-                        case 2:
-                            clearScreen();
-                            purchaseProducts(scanner, products, loggedInEmployee);
-                            break;
-                        case 3:
-                            clearScreen();
-                            managePersonalInfo(scanner, loggedInEmployee);
-                            break;
-                        case 4:
-                            System.out.println("Logging out...");
-                            exit = true;
-                            break;
-                        default:
-                            System.out.println("Invalid option. Please try again.");
-                            break;
+                        switch (choice) {
+                            case 1:
+                                clearScreen();
+                                manageProducts(scanner, products);
+                                break;
+                            case 2:
+                                clearScreen();
+                                purchaseProducts(scanner, products, loggedInEmployee);
+                                break;
+                            case 3:
+                                clearScreen();
+                                List<Employee> employeeList = Arrays.asList(employees);
+                                managePersonalInfo(scanner, loggedInEmployee, employeeList);
+                                break;
+                            case 4:
+                                clearScreen();
+                                loggedInEmployee = null;
+                                exit = true;
+                                break;
+                            default:
+                                System.out.println("Invalid option. Please try again.");
+                                break;
+                        }
                     }
                 }
             }
-
-            scanner.close();
-
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } finally {
+            scanner.close();
         }
     }
 
@@ -173,11 +178,11 @@ public class Main {
         double price = scanner.nextDouble();
         System.out.print("Enter Product Stock: ");
         int stock = scanner.nextInt();
-        scanner.nextLine(); // Consume newline character
+        scanner.nextLine();
 
         Product newProduct = new Product(productId, productName, price, stock);
         products.add(newProduct);
-        updateProductsJson(products);
+        Product.updateProductsJson(products);
         System.out.println("Product added successfully.");
     }
 
@@ -191,7 +196,7 @@ public class Main {
             Product product = products.get(i);
             if (product.getProductId().equalsIgnoreCase(productId)) {
                 products.remove(i);
-                updateProductsJson(products);
+                Product.updateProductsJson(products);
                 System.out.println("Product removed successfully.");
                 removed = true;
                 break;
@@ -238,8 +243,7 @@ public class Main {
                         System.out.println("Invalid stock. Keeping the current stock.");
                     }
                 }
-
-                updateProductsJson(products);
+                Product.updateProductsJson(products);
                 System.out.println("Product updated successfully.");
                 return;
             }
@@ -317,7 +321,7 @@ public class Main {
             }
         }
 
-// สร้าง Transaction สำหรับสินค้าทั้งหมดที่ซื้อ
+        // สร้าง Transaction สำหรับสินค้าทั้งหมดที่ซื้อ
         if (!purchasedProducts.isEmpty()) {
             String transactionId = "T" + System.currentTimeMillis();
             Transaction transaction = new Transaction(transactionId, employee, purchasedProducts, purchasedQuantities);
@@ -326,8 +330,8 @@ public class Main {
             // แสดงบิลก่อนกลับไปที่เมนูหลัก
             System.out.println(transaction.getBillContent());
 
-            // อัปเดตข้อมูลสินค้าลงไฟล์ JSON
-            updateProductsJson(products);
+            // อัปเดตข้อมูลสินค้าลงไฟล์ JSON โดยเรียกใช้เมธอดที่อยู่ในคลาส Product
+            Product.updateProductsJson(products);
 
             System.out.println("Press Enter to return to the main menu...");
             scanner.nextLine();
@@ -337,40 +341,88 @@ public class Main {
 
     }
 
-    // ฟังก์ชันสำหรับอัปเดตสินค้าในไฟล์ JSON
-    private static void updateProductsJson(List<Product> products) {
-        JSONArray productsJsonArray = new JSONArray();
+    private static void managePersonalInfo(Scanner scanner, Employee employee, List<Employee> employees) {
+        boolean backToMainMenu = false;
+        while (!backToMainMenu) {
+            clearScreen();
+            System.out.println("=== Manage Personal Information ===");
+            System.out.println("Current Information:");
+            System.out.println("Name: " + employee.getName());
+            System.out.println("Position: " + employee.getPosition());
+            System.out.println("Username: " + employee.getUsername());
+            System.out.println("-----------------------------------");
+            System.out.println("1. Edit Name");
+            System.out.println("2. Edit Position");
+            System.out.println("3. Edit Username");
+            System.out.println("4. Edit Password");
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
 
-        for (Product product : products) {
-            JSONObject productObject = new JSONObject();
-            productObject.put("productId", product.getProductId());
-            productObject.put("name", product.getName());
-            productObject.put("price", product.getPrice());
-            productObject.put("stock", product.getStock());
-            productsJsonArray.add(productObject);
-        }
+            boolean updated = false;
 
-        try (FileWriter file = new FileWriter("Products.json")) {
-            file.write(productsJsonArray.toJSONString());
-            file.flush();
-        } catch (IOException e) {
-            System.out.println("An error occurred while updating the products JSON file: " + e.getMessage());
-        }
-    }
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter new name: ");
+                    String newName = scanner.nextLine();
+                    if (!newName.isEmpty()) {
+                        employee.setName(newName);
+                        System.out.println("Name updated successfully.");
+                        updated = true;
+                    } else {
+                        System.out.println("No changes made to name.");
+                    }
+                    break;
+                case 2:
+                    System.out.print("Enter new position: ");
+                    String newPosition = scanner.nextLine();
+                    if (!newPosition.isEmpty()) {
+                        employee.setPosition(newPosition);
+                        System.out.println("Position updated successfully.");
+                        updated = true;
+                    } else {
+                        System.out.println("No changes made to position.");
+                    }
+                    break;
+                case 3:
+                    System.out.print("Enter new username: ");
+                    String newUsername = scanner.nextLine();
+                    if (!newUsername.isEmpty()) {
+                        employee.setUsername(newUsername);
+                        System.out.println("Username updated successfully.");
+                        updated = true;
+                    } else {
+                        System.out.println("No changes made to username.");
+                    }
+                    break;
+                case 4:
+                    System.out.print("Enter new password: ");
+                    String newPassword = scanner.nextLine();
+                    if (!newPassword.isEmpty()) {
+                        employee.setPassword(newPassword);
+                        System.out.println("Password updated successfully.");
+                        updated = true;
+                    } else {
+                        System.out.println("No changes made to password.");
+                    }
+                    break;
+                case 0:
+                    backToMainMenu = true;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
 
-    // ฟังก์ชันสำหรับจัดการข้อมูลส่วนตัว
-    private static void managePersonalInfo(Scanner scanner, Employee employee) {
-        System.out.println("=== Manage Personal Information ===");
-        System.out.println("Current Information: " + employee);
-        System.out.println("Would you like to update your position? (y/n): ");
-        String response = scanner.nextLine();
-        if (response.equalsIgnoreCase("y")) {
-            System.out.print("Enter new position: ");
-            String newPosition = scanner.nextLine();
-            employee.setPosition(newPosition);
-            System.out.println("Position updated successfully.");
-        } else {
-            System.out.println("No changes made.");
+            // อัปเดตข้อมูลในไฟล์ JSON หากมีการเปลี่ยนแปลง
+            if (updated) {
+                Employee.updateEmployeesJson(employees);
+            }
+
+            if (!backToMainMenu) {
+                System.out.println("\nPress Enter to return to the Manage Personal Information menu...");
+                scanner.nextLine();
+            }
         }
     }
 
