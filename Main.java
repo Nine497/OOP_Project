@@ -54,6 +54,7 @@ public class Main {
 
             // เริ่มต้นการทำงานของระบบ
             while (true) {
+                clearScreen();
                 System.out.println("\n=== Welcome to the System ===");
                 System.out.print("Enter username: ");
                 String inputUsername = scanner.nextLine();
@@ -85,33 +86,72 @@ public class Main {
                         System.out.println("1. Manage Products");
                         System.out.println("2. Purchase Products");
                         System.out.println("3. Manage Personal Information");
-                        System.out.println("4. Logout");
+
+                        // แสดงเมนู Manage Employee เฉพาะกรณีที่ผู้ใช้เป็น Manager
+                        if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
+                            System.out.println("4. Manage Employees");
+                            System.out.println("5. Logout");
+                        } else {
+                            System.out.println("4. Logout");
+                        }
+
                         System.out.print("Choose an option: ");
                         int choice = scanner.nextInt();
                         scanner.nextLine();
 
-                        switch (choice) {
-                            case 1:
-                                clearScreen();
-                                manageProducts(scanner, products);
-                                break;
-                            case 2:
-                                clearScreen();
-                                purchaseProducts(scanner, products, loggedInEmployee);
-                                break;
-                            case 3:
-                                clearScreen();
-                                List<Employee> employeeList = Arrays.asList(employees);
-                                managePersonalInfo(scanner, loggedInEmployee, employeeList);
-                                break;
-                            case 4:
-                                clearScreen();
-                                loggedInEmployee = null;
-                                exit = true;
-                                break;
-                            default:
-                                System.out.println("Invalid option. Please try again.");
-                                break;
+                        // กำหนดค่าเมนูให้สอดคล้องกับบทบาท
+                        if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
+                            switch (choice) {
+                                case 1:
+                                    clearScreen();
+                                    manageProducts(scanner, products);
+                                    break;
+                                case 2:
+                                    clearScreen();
+                                    purchaseProducts(scanner, products, loggedInEmployee);
+                                    break;
+                                case 3:
+                                    clearScreen();
+                                    List<Employee> employeeList = Arrays.asList(employees);
+                                    managePersonalInfo(scanner, loggedInEmployee, employeeList);
+                                    break;
+                                case 4:
+                                    clearScreen();
+                                    manageEmployees(scanner, employees);
+                                    break;
+                                case 5:
+                                    System.out.println("Logging out...");
+                                    loggedInEmployee = null;
+                                    exit = true;
+                                    break;
+                                default:
+                                    System.out.println("Invalid option. Please try again.");
+                                    break;
+                            }
+                        } else {
+                            switch (choice) {
+                                case 1:
+                                    clearScreen();
+                                    manageProducts(scanner, products);
+                                    break;
+                                case 2:
+                                    clearScreen();
+                                    purchaseProducts(scanner, products, loggedInEmployee);
+                                    break;
+                                case 3:
+                                    clearScreen();
+                                    List<Employee> employeeList = Arrays.asList(employees);
+                                    managePersonalInfo(scanner, loggedInEmployee, employeeList);
+                                    break;
+                                case 4:
+                                    System.out.println("Logging out...");
+                                    loggedInEmployee = null;
+                                    exit = true;
+                                    break;
+                                default:
+                                    System.out.println("Invalid option. Please try again.");
+                                    break;
+                            }
                         }
                     }
                 }
@@ -123,6 +163,217 @@ public class Main {
         } finally {
             scanner.close();
         }
+    }
+
+    // ฟังก์ชันสำหรับจัดการพนักงาน
+    private static void manageEmployees(Scanner scanner, Employee[] employees) {
+        boolean backToMainMenu = false;
+
+        while (!backToMainMenu) {
+            clearScreen();
+            System.out.println("=== Manage Employees ===");
+            System.out.println("1. Add Employee");
+            System.out.println("2. Remove Employee");
+            System.out.println("3. Edit Employee");
+            System.out.println("4. View Employees");
+            System.out.println("0. Back to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline character
+
+            switch (choice) {
+                case 1:
+                    addEmployee(scanner, employees);
+                    break;
+                case 2:
+                    removeEmployee(scanner, employees);
+                    break;
+                case 3:
+                    editEmployee(scanner, employees);
+                    break;
+                case 4:
+                    viewEmployees(employees);
+                    break;
+                case 0:
+                    backToMainMenu = true;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+
+            if (!backToMainMenu) {
+                System.out.println("\nPress Enter to return to the Manage Employees menu...");
+                scanner.nextLine();
+            }
+        }
+    }
+
+// ฟังก์ชันสำหรับแสดงรายชื่อพนักงานทั้งหมด
+    private static void displayAllEmployees(Employee[] employees) {
+        System.out.println("\n=== List of Employees ===");
+        if (employees.length == 0) {
+            System.out.println("No employees available.");
+        } else {
+            for (int i = 0; i < employees.length; i++) {
+                Employee emp = employees[i];
+                System.out.println((i + 1) + ". ID: " + emp.getId() + " | Name: " + emp.getName()
+                        + " |  Position: " + emp.getPosition() + " | Username: " + emp.getUsername());
+            }
+        }
+        System.out.println("=======================================");
+    }
+
+// ฟังก์ชันสำหรับเพิ่มพนักงาน
+    private static void addEmployee(Scanner scanner, Employee[] employees) {
+        System.out.println("\n=== Add Employee ===");
+        System.out.println("Enter '0' to cancel and go back.");
+        System.out.print("Enter Employee ID: ");
+        String id = scanner.nextLine();
+        if (id.equals("0")) {
+            System.out.println("Cancelled. Returning to Manage Employees menu.");
+            return;
+        }
+
+        System.out.print("Enter Employee Name: ");
+        String name = scanner.nextLine();
+        if (name.equals("0")) {
+            System.out.println("Cancelled. Returning to Manage Employees menu.");
+            return;
+        }
+
+        System.out.print("Enter Employee Position: ");
+        String position = scanner.nextLine();
+        if (position.equals("0")) {
+            System.out.println("Cancelled. Returning to Manage Employees menu.");
+            return;
+        }
+
+        System.out.print("Enter Employee Username: ");
+        String username = scanner.nextLine();
+        if (username.equals("0")) {
+            System.out.println("Cancelled. Returning to Manage Employees menu.");
+            return;
+        }
+
+        System.out.print("Enter Employee Password: ");
+        String password = scanner.nextLine();
+        if (password.equals("0")) {
+            System.out.println("Cancelled. Returning to Manage Employees menu.");
+            return;
+        }
+
+        Employee newEmployee = new Employee(id, name, position, username, password);
+        employees = Arrays.copyOf(employees, employees.length + 1);
+        employees[employees.length - 1] = newEmployee;
+
+        Employee.updateEmployeesJson(Arrays.asList(employees));
+        System.out.println("Employee added successfully.");
+    }
+
+// ฟังก์ชันสำหรับลบพนักงาน
+    private static void removeEmployee(Scanner scanner, Employee[] employees) {
+        System.out.println("\n=== Remove Employee ===");
+        displayAllEmployees(employees);
+        System.out.println("Enter '0' to cancel and go back.");
+        System.out.print("Enter Employee ID to remove: ");
+        String id = scanner.nextLine();
+        if (id.equals("0")) {
+            System.out.println("Cancelled. Returning to Manage Employees menu.");
+            return;
+        }
+
+        boolean removed = false;
+        List<Employee> employeeList = new ArrayList<>(Arrays.asList(employees));
+        for (int i = 0; i < employeeList.size(); i++) {
+            if (employeeList.get(i).getId().equals(id)) {
+                employeeList.remove(i);
+                removed = true;
+                break;
+            }
+        }
+
+        if (removed) {
+            employees = employeeList.toArray(new Employee[0]);
+            Employee.updateEmployeesJson(Arrays.asList(employees));
+            System.out.println("Employee removed successfully.");
+        } else {
+            System.out.println("Employee not found.");
+        }
+    }
+
+// ฟังก์ชันสำหรับแก้ไขข้อมูลพนักงาน
+    private static void editEmployee(Scanner scanner, Employee[] employees) {
+        System.out.println("\n=== Edit Employee ===");
+        displayAllEmployees(employees);
+        System.out.println("Enter '0' to cancel and go back.");
+        System.out.print("Enter Employee ID to edit: ");
+        String id = scanner.nextLine();
+        if (id.equals("0")) {
+            System.out.println("Cancelled. Returning to Manage Employees menu.");
+            return;
+        }
+
+        for (int i = 0; i < employees.length; i++) {
+            Employee emp = employees[i];
+            if (emp.getId().equals(id)) {
+                System.out.println("Editing Employee: " + emp.getName());
+                System.out.print("Enter new name (or press Enter to keep current): ");
+                String newName = scanner.nextLine();
+                if (newName.equals("0")) {
+                    System.out.println("Cancelled. Returning to Manage Employees menu.");
+                    return;
+                }
+
+                System.out.print("Enter new position (or press Enter to keep current): ");
+                String newPosition = scanner.nextLine();
+                if (newPosition.equals("0")) {
+                    System.out.println("Cancelled. Returning to Manage Employees menu.");
+                    return;
+                }
+
+                System.out.print("Enter new username (or press Enter to keep current): ");
+                String newUsername = scanner.nextLine();
+                if (newUsername.equals("0")) {
+                    System.out.println("Cancelled. Returning to Manage Employees menu.");
+                    return;
+                }
+
+                System.out.print("Enter new password (or press Enter to keep current): ");
+                String newPassword = scanner.nextLine();
+                if (newPassword.equals("0")) {
+                    System.out.println("Cancelled. Returning to Manage Employees menu.");
+                    return;
+                }
+
+                if (!newName.isEmpty()) {
+                    emp.setName(newName);
+                }
+                if (!newPosition.isEmpty()) {
+                    emp.setPosition(newPosition);
+                }
+                if (!newUsername.isEmpty()) {
+                    emp.setUsername(newUsername);
+                }
+                if (!newPassword.isEmpty()) {
+                    emp.setPassword(newPassword);
+                }
+
+                Employee.updateEmployeesJson(Arrays.asList(employees));
+                System.out.println("Employee information updated successfully.");
+                return;
+            }
+        }
+
+        System.out.println("Employee not found.");
+    }
+
+// ฟังก์ชันสำหรับดูข้อมูลพนักงานทั้งหมด
+    private static void viewEmployees(Employee[] employees) {
+        System.out.println("\n=== View Employees ===");
+        displayAllEmployees(employees);
+        System.out.println("Press Enter to return to the Manage Employees menu...");
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
     }
 
 // ฟังก์ชันสำหรับจัดการสินค้า

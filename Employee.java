@@ -8,7 +8,6 @@ import java.util.List;
 
 public class Employee {
 
-    private static final String JSON_FILE_PATH = "Employees.json";
     private String id;
     private String name;
     private String position;
