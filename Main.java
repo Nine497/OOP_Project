@@ -8,10 +8,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Main {
 
@@ -44,9 +48,9 @@ public class Main {
                 String productId = (String) productObject.get("productId");
                 String productName = (String) productObject.get("name");
                 double price = (Double) productObject.get("price");
-                long stock = (Long) productObject.get("stock");
+                int stock = ((Long) productObject.get("stock")).intValue();
 
-                Product product = new Product(productId, productName, price, (int) stock);
+                Product product = new Product(productId, productName, price, stock);
                 products.add(product);
             }
 
@@ -84,9 +88,11 @@ public class Main {
                         System.out.println("2. Purchase Products");
                         System.out.println("3. Manage Personal Information");
 
+                        // Check if the logged-in user is a Manager
                         if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
                             System.out.println("4. Manage Employees");
-                            System.out.println("5. Logout");
+                            System.out.println("5. View Sales Report");
+                            System.out.println("6. Logout");
                         } else {
                             System.out.println("4. Logout");
                         }
@@ -95,6 +101,7 @@ public class Main {
                         int choice = scanner.nextInt();
                         scanner.nextLine();
 
+                        // Handle menu options based on user role (Manager or not)
                         if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
                             switch (choice) {
                                 case 1:
@@ -115,6 +122,10 @@ public class Main {
                                     manageEmployees(scanner, employees);
                                     break;
                                 case 5:
+                                    clearScreen();
+                                    generateMonthlyReport();
+                                    break;
+                                case 6:
                                     System.out.println("Logging out...");
                                     loggedInEmployee = null;
                                     exit = true;
@@ -657,6 +668,40 @@ public class Main {
                 scanner.nextLine();
             }
         }
+    }
+
+    public static void generateMonthlyReport() {
+        JSONParser parser = new JSONParser();
+        Map<String, Double> monthlySales = new HashMap<>();
+        Scanner scanner = new Scanner(System.in);
+        try {
+            FileReader reader = new FileReader("transaction.json");
+            JSONArray transactionsArray = (JSONArray) parser.parse(reader);
+
+            for (int i = 0; i < transactionsArray.size(); i++) {
+                JSONObject transactionObject = (JSONObject) transactionsArray.get(i);
+                String dateTime = (String) transactionObject.get("dateTime");
+                String transactionMonthYear = dateTime.substring(0, 7);
+
+                Number totalAmountNumber = (Number) transactionObject.get("totalAmount");
+                double totalAmount = totalAmountNumber.doubleValue();
+
+                monthlySales.put(transactionMonthYear,
+                        monthlySales.getOrDefault(transactionMonthYear, 0.0) + totalAmount);
+            }
+
+            System.out.println("\n=== Monthly Sales Report ===");
+            for (Map.Entry<String, Double> entry : monthlySales.entrySet()) {
+                String monthYear = entry.getKey();
+                double totalSales = entry.getValue();
+                System.out.println("Year-Month: " + monthYear + " | Total Sales: " + totalSales + " THB");
+            }
+        } catch (IOException | ParseException e) {
+            System.out.println("An error occurred while generating the sales report: " + e.getMessage());
+        }
+
+        System.out.println("\nPress Enter to return to the main menu...");
+        scanner.nextLine();
     }
 
     public final static void clearScreen() {

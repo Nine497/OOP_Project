@@ -1,3 +1,71 @@
-{"dateTime":"2024-10-08 16:43:13","totalAmount":650.0,"purchasedItems":[{"quantity":10,"productId":"P002","totalPrice":350.0,"name":"Bread","pricePerUnit":35.0},{"quantity":5,"productId":"P003","totalPrice":300.0,"name":"Eggs","pricePerUnit":60.0}],"employee":"John Doe","transactionId":"T1728380593714"}
-{"dateTime":"2024-10-08 16:54:19","totalAmount":1800.0,"purchasedItems":[{"quantity":20,"productId":"P001","totalPrice":900.0,"name":"Milk","pricePerUnit":45.0},{"quantity":15,"productId":"P003","totalPrice":900.0,"name":"Eggs","pricePerUnit":60.0}],"employee":"John Doe","transactionId":"T1728381259395"}
-{"dateTime":"2024-10-08 16:57:07","totalAmount":750.0,"purchasedItems":[{"quantity":10,"productId":"P001","totalPrice":450.0,"name":"Milk","pricePerUnit":45.0},{"quantity":5,"productId":"P003","totalPrice":300.0,"name":"Eggs","pricePerUnit":60.0}],"employee":"John Doe","transactionId":"T1728381427199"}
+[
+    {
+        "dateTime": "2024-10-08 16:43:13",
+        "totalAmount": 650,
+        "purchasedItems": 
+        [
+            {
+                "quantity": 10,
+                "productId": "P002",
+                "totalPrice": 350,
+                "name": "Bread",
+                "pricePerUnit": 35
+            },
+            {
+                "quantity": 5,
+                "productId": "P003",
+                "totalPrice": 300,
+                "name": "Eggs",
+                "pricePerUnit": 60
+            }
+        ],
+        "employee": "John Doe",
+        "transactionId": "T1728380593714"
+    },
+    {
+        "dateTime": "2024-10-08 16:54:19",
+        "totalAmount": 1800,
+        "purchasedItems": 
+        [
+            {
+                "quantity": 20,
+                "productId": "P001",
+                "totalPrice": 900,
+                "name": "Milk",
+                "pricePerUnit": 45
+            },
+            {
+                "quantity": 15,
+                "productId": "P003",
+                "totalPrice": 900,
+                "name": "Eggs",
+                "pricePerUnit": 60
+            }
+        ],
+        "employee": "John Doe",
+        "transactionId": "T1728381259395"
+    },
+    {
+        "dateTime": "2024-10-08 16:57:07",
+        "totalAmount": 750,
+        "purchasedItems": 
+        [
+            {
+                "quantity": 10,
+                "productId": "P001",
+                "totalPrice": 450,
+                "name": "Milk",
+                "pricePerUnit": 45
+            },
+            {
+                "quantity": 5,
+                "productId": "P003",
+                "totalPrice": 300,
+                "name": "Eggs",
+                "pricePerUnit": 60
+            }
+        ],
+        "employee": "John Doe",
+        "transactionId": "T1728381427199"
+    }
+]
