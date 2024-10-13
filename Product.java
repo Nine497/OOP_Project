@@ -22,7 +22,6 @@ public class Product {
         this.stock = stock;
     }
 
-    // Getters
     public String getProductId() {
         return productId;
     }
@@ -39,7 +38,6 @@ public class Product {
         return stock;
     }
 
-    // Setters
     public void setName(String name) {
         this.name = name;
     }
@@ -52,7 +50,6 @@ public class Product {
         this.stock = stock;
     }
 
-    // Method to decrease stock by a specified quantity
     public void decreaseStock(int quantity) {
         if (stock >= quantity) {
             stock -= quantity;
@@ -61,7 +58,6 @@ public class Product {
         }
     }
 
-    // Method to increase stock by a specified quantity
     public void increaseStock(int quantity) {
         if (quantity > 0) {
             stock += quantity;
@@ -70,7 +66,6 @@ public class Product {
         }
     }
 
-    // Method to edit product details
     public void editProduct(String newName, Double newPrice, Integer newStock) {
         if (newName != null && !newName.isEmpty()) {
             setName(newName);
@@ -83,7 +78,6 @@ public class Product {
         }
     }
 
-    // Static method to update the product list in the JSON file
     public static void updateProductsJson(List<Product> products) {
         JSONArray productsJsonArray = new JSONArray();
 
@@ -103,10 +97,5 @@ public class Product {
         } catch (IOException e) {
             System.out.println("An error occurred while updating the products JSON file: " + e.getMessage());
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Product ID: " + productId + ", Name: " + name + ", Price: " + price + " THB, Stock: " + stock;
     }
 }

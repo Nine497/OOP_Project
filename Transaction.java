@@ -1,3 +1,4 @@
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -8,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Transaction {
+
     private String transactionId;
     private Employee employee;
     private List<Product> products;
@@ -24,7 +26,6 @@ public class Transaction {
         processTransaction();
     }
 
-    // Method สำหรับประมวลผลการซื้อสินค้าทั้งหมด
     private void processTransaction() {
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
@@ -35,7 +36,6 @@ public class Transaction {
         saveTransactionToJson();
     }
 
-    // สร้าง JSON object สำหรับการซื้อสินค้าและบันทึกลงไฟล์
     private void saveTransactionToJson() {
         JSONObject transactionJson = new JSONObject();
         transactionJson.put("transactionId", transactionId);
@@ -67,7 +67,6 @@ public class Transaction {
         transactionJson.put("purchasedItems", purchasedItems);
         transactionJson.put("totalAmount", totalAmount);
 
-        // เขียนข้อมูล JSON ลงไฟล์ Transaction.json
         try (FileWriter fileWriter = new FileWriter("transaction.json", true)) {
             fileWriter.write(transactionJson.toJSONString());
             fileWriter.write(System.lineSeparator());
@@ -78,7 +77,6 @@ public class Transaction {
         }
     }
 
-    // สร้างบิลสำหรับการซื้อสินค้าหลายรายการและคืนค่าเป็น String
     public String getBillContent() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = dateTime.format(formatter);
@@ -98,23 +96,15 @@ public class Transaction {
             totalAmount += itemTotal;
 
             billContent.append("- ").append(product.getName())
-                       .append(", Quantity: ").append(quantity)
-                       .append(", Price per unit: ").append(product.getPrice()).append(" THB")
-                       .append(", Total: ").append(itemTotal).append(" THB\n");
+                    .append(", Quantity: ").append(quantity)
+                    .append(", Price per unit: ").append(product.getPrice()).append(" THB")
+                    .append(", Total: ").append(itemTotal).append(" THB\n");
         }
 
         billContent.append("Grand Total: ").append(totalAmount).append(" THB\n");
         billContent.append("==========================\n");
 
         return billContent.toString();
-    }
-
-    @Override
-    public String toString() {
-        return "Transaction ID: " + transactionId +
-               ", Employee: " + employee.getName() +
-               ", Total Items: " + products.size() +
-               ", Date and Time: " + dateTime;
     }
 
     public String getTransactionId() {

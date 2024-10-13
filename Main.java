@@ -21,7 +21,6 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            // อ่านข้อมูลพนักงาน
             FileReader employeeReader = new FileReader("employees.json");
             JSONArray employeesJsonArray = (JSONArray) parser.parse(employeeReader);
             Employee[] employees = new Employee[employeesJsonArray.size()];
@@ -37,7 +36,6 @@ public class Main {
                 employees[i] = new Employee(id, name, position, username, password);
             }
 
-            // อ่านข้อมูลสินค้า
             FileReader productReader = new FileReader("Products.json");
             JSONArray productsJsonArray = (JSONArray) parser.parse(productReader);
 
@@ -52,7 +50,6 @@ public class Main {
                 products.add(product);
             }
 
-            // เริ่มต้นการทำงานของระบบ
             while (true) {
                 clearScreen();
                 System.out.println("\n=== Welcome to the System ===");
@@ -87,7 +84,6 @@ public class Main {
                         System.out.println("2. Purchase Products");
                         System.out.println("3. Manage Personal Information");
 
-                        // แสดงเมนู Manage Employee เฉพาะกรณีที่ผู้ใช้เป็น Manager
                         if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
                             System.out.println("4. Manage Employees");
                             System.out.println("5. Logout");
@@ -99,7 +95,6 @@ public class Main {
                         int choice = scanner.nextInt();
                         scanner.nextLine();
 
-                        // กำหนดค่าเมนูให้สอดคล้องกับบทบาท
                         if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
                             switch (choice) {
                                 case 1:
@@ -165,7 +160,6 @@ public class Main {
         }
     }
 
-    // ฟังก์ชันสำหรับจัดการพนักงาน
     private static void manageEmployees(Scanner scanner, Employee[] employees) {
         boolean backToMainMenu = false;
 
@@ -179,7 +173,7 @@ public class Main {
             System.out.println("0. Back to Main Menu");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -208,7 +202,6 @@ public class Main {
         }
     }
 
-// ฟังก์ชันสำหรับแสดงรายชื่อพนักงานทั้งหมด
     private static void displayAllEmployees(Employee[] employees) {
         System.out.println("\n=== List of Employees ===");
         if (employees.length == 0) {
@@ -223,7 +216,6 @@ public class Main {
         System.out.println("=======================================");
     }
 
-// ฟังก์ชันสำหรับเพิ่มพนักงาน
     private static void addEmployee(Scanner scanner, Employee[] employees) {
         System.out.println("\n=== Add Employee ===");
         System.out.println("Enter '0' to cancel and go back.");
@@ -270,7 +262,6 @@ public class Main {
         System.out.println("Employee added successfully.");
     }
 
-// ฟังก์ชันสำหรับลบพนักงาน
     private static void removeEmployee(Scanner scanner, Employee[] employees) {
         System.out.println("\n=== Remove Employee ===");
         displayAllEmployees(employees);
@@ -301,7 +292,6 @@ public class Main {
         }
     }
 
-// ฟังก์ชันสำหรับแก้ไขข้อมูลพนักงาน
     private static void editEmployee(Scanner scanner, Employee[] employees) {
         System.out.println("\n=== Edit Employee ===");
         displayAllEmployees(employees);
@@ -367,7 +357,6 @@ public class Main {
         System.out.println("Employee not found.");
     }
 
-// ฟังก์ชันสำหรับดูข้อมูลพนักงานทั้งหมด
     private static void viewEmployees(Employee[] employees) {
         System.out.println("\n=== View Employees ===");
         displayAllEmployees(employees);
@@ -376,7 +365,6 @@ public class Main {
         scanner.nextLine();
     }
 
-// ฟังก์ชันสำหรับจัดการสินค้า
     private static void manageProducts(Scanner scanner, List<Product> products) {
         boolean backToMainMenu = false;
 
@@ -572,18 +560,13 @@ public class Main {
             }
         }
 
-        // สร้าง Transaction สำหรับสินค้าทั้งหมดที่ซื้อ
         if (!purchasedProducts.isEmpty()) {
             String transactionId = "T" + System.currentTimeMillis();
             Transaction transaction = new Transaction(transactionId, employee, purchasedProducts, purchasedQuantities);
             clearScreen();
             System.out.println("");
-            // แสดงบิลก่อนกลับไปที่เมนูหลัก
             System.out.println(transaction.getBillContent());
-
-            // อัปเดตข้อมูลสินค้าลงไฟล์ JSON โดยเรียกใช้เมธอดที่อยู่ในคลาส Product
             Product.updateProductsJson(products);
-
             System.out.println("Press Enter to return to the main menu...");
             scanner.nextLine();
         } else {
@@ -665,7 +648,6 @@ public class Main {
                     System.out.println("Invalid option. Please try again.");
             }
 
-            // อัปเดตข้อมูลในไฟล์ JSON หากมีการเปลี่ยนแปลง
             if (updated) {
                 Employee.updateEmployeesJson(employees);
             }

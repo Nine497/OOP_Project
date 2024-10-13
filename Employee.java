@@ -14,7 +14,6 @@ public class Employee {
     private String username;
     private String password;
 
-    // Constructor
     public Employee(String id, String name, String position, String username, String password) {
         this.id = id;
         this.name = name;
@@ -23,7 +22,6 @@ public class Employee {
         this.password = password;
     }
 
-    // Getters
     public String getId() {
         return id;
     }
@@ -44,7 +42,6 @@ public class Employee {
         return password;
     }
 
-    // Setters
     public void setName(String name) {
         this.name = name;
     }
@@ -61,12 +58,10 @@ public class Employee {
         this.password = password;
     }
 
-    // Method for logging in
     public boolean login(String inputUsername, String inputPassword) {
         return this.username.equals(inputUsername) && this.password.equals(inputPassword);
     }
 
-    // Method ใน Employee สำหรับอัปเดตข้อมูล JSON
     public static void updateEmployeesJson(List<Employee> employees) {
         JSONArray employeesJsonArray = new JSONArray();
 
@@ -88,10 +83,5 @@ public class Employee {
         } catch (IOException e) {
             System.out.println("An error occurred while updating the employees JSON file: " + e.getMessage());
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Employee ID: " + id + ", Name: " + name + ", Position: " + position + ", Username: " + username;
     }
 }
