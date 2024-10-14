@@ -960,7 +960,7 @@ public class Main {
         while (!backToMainMenu) {
             clearScreen();
             System.out.println("===================================");
-            System.out.println("    MANAGE PERSONAL INFOMATION     ");
+            System.out.println("    MANAGE PERSONAL INFORMATION    ");
             System.out.println("===================================");
             System.out.println("Current Information:");
             System.out.println("Name: " + employee.getName());
@@ -968,9 +968,8 @@ public class Main {
             System.out.println("Username: " + employee.getUsername());
             System.out.println("===================================");
             System.out.println("1. Edit Name");
-            System.out.println("2. Edit Position");
-            System.out.println("3. Edit Username");
-            System.out.println("4. Edit Password");
+            System.out.println("2. Edit Username");
+            System.out.println("3. Edit Password");
             System.out.println("0. Back to Main Menu");
 
             int choice = -1;
@@ -981,10 +980,10 @@ public class Main {
                 if (scanner.hasNextInt()) {
                     choice = scanner.nextInt();
                     scanner.nextLine();
-                    if (choice >= 0 && choice <= 4) {
+                    if (choice >= 0 && choice <= 3) {
                         validInput = true;
                     } else {
-                        System.out.println("Invalid option. Please choose a number between 0 and 4.");
+                        System.out.println("Invalid option. Please choose a number between 0 and 3.");
                     }
                 } else {
                     System.out.println("Invalid input. Please enter a valid number.");
@@ -1007,17 +1006,6 @@ public class Main {
                     }
                     break;
                 case 2:
-                    System.out.print("Enter new position: ");
-                    String newPosition = scanner.nextLine();
-                    if (!newPosition.isEmpty()) {
-                        employee.setPosition(newPosition);
-                        System.out.println("Position updated successfully.");
-                        updated = true;
-                    } else {
-                        System.out.println("No changes made to position.");
-                    }
-                    break;
-                case 3:
                     System.out.print("Enter new username: ");
                     String newUsername = scanner.nextLine();
                     if (!newUsername.isEmpty()) {
@@ -1028,7 +1016,7 @@ public class Main {
                         System.out.println("No changes made to username.");
                     }
                     break;
-                case 4:
+                case 3:
                     System.out.print("Enter new password: ");
                     String newPassword = scanner.nextLine();
                     if (!newPassword.isEmpty()) {
