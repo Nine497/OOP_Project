@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.time.format.DateTimeParseException;
+import java.text.DecimalFormat;
 
 public class Main {
 
@@ -50,17 +52,26 @@ public class Main {
                 double price = (Double) productObject.get("price");
                 int stock = ((Long) productObject.get("stock")).intValue();
 
-                Product product = new Product(productId, productName, price, stock);
+                String importDateStr = (String) productObject.get("importDate");
+                LocalDate importDate = LocalDate.parse(importDateStr, DateTimeFormatter.ISO_DATE);
+
+                Product product = new Product(productId, productName, price, stock, importDate);
                 products.add(product);
             }
 
             while (true) {
                 clearScreen();
-                System.out.println("\n=== Welcome to the System ===");
-                System.out.print("Enter username: ");
+                System.out.println("_________________________________________________________________________________");
+                System.out.println("|                                                                                |");
+                System.out.println("|                              Welcome to the System                             |");
+                System.out.println("|                                                                                |");
+                System.out.println("|________________________________________________________________________________|");
+                System.out.println();
+
+                System.out.print("  Enter username: ");
                 String inputUsername = scanner.nextLine();
 
-                System.out.print("Enter password: ");
+                System.out.print("  Enter password: ");
                 String inputPassword = scanner.nextLine();
 
                 boolean isLoginSuccessful = false;
@@ -69,7 +80,6 @@ public class Main {
                 for (int i = 0; i < employees.length; i++) {
                     Employee emp = employees[i];
                     if (emp.login(inputUsername, inputPassword)) {
-                        System.out.println("Login successful! Welcome " + emp.getName());
                         isLoginSuccessful = true;
                         loggedInEmployee = emp;
                         break;
@@ -87,8 +97,6 @@ public class Main {
                         System.out.println("1. Manage Products");
                         System.out.println("2. Purchase Products");
                         System.out.println("3. Manage Personal Information");
-
-                        // Check if the logged-in user is a Manager
                         if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
                             System.out.println("4. Manage Employees");
                             System.out.println("5. View Sales Report");
@@ -97,11 +105,33 @@ public class Main {
                             System.out.println("4. Logout");
                         }
 
-                        System.out.print("Choose an option: ");
-                        int choice = scanner.nextInt();
-                        scanner.nextLine();
+                        int choice = -1;
+                        boolean validInput = false;
 
-                        // Handle menu options based on user role (Manager or not)
+                        while (!validInput) {
+                            System.out.print("Choose an option: ");
+                            if (scanner.hasNextInt()) {
+                                choice = scanner.nextInt();
+                                scanner.nextLine();
+                                if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
+                                    if (choice >= 1 && choice <= 6) {
+                                        validInput = true;
+                                    } else {
+                                        System.out.println("Invalid option. Please choose a number between 1 and 6.");
+                                    }
+                                } else {
+                                    if (choice >= 1 && choice <= 4) {
+                                        validInput = true;
+                                    } else {
+                                        System.out.println("Invalid option. Please choose a number between 1 and 4.");
+                                    }
+                                }
+                            } else {
+                                System.out.println("Invalid input. Please enter a valid number.");
+                                scanner.nextLine();
+                            }
+                        }
+
                         if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
                             switch (choice) {
                                 case 1:
@@ -182,9 +212,25 @@ public class Main {
             System.out.println("3. Edit Employee");
             System.out.println("4. View Employees");
             System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+
+            int choice = -1;
+            boolean validInput = false;
+
+            while (!validInput) {
+                System.out.print("Choose an option: ");
+                if (scanner.hasNextInt()) {
+                    choice = scanner.nextInt();
+                    scanner.nextLine();
+                    if (choice >= 0 && choice <= 4) {
+                        validInput = true;
+                    } else {
+                        System.out.println("Invalid option. Please choose a number between 0 and 4.");
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a valid number.");
+                    scanner.nextLine();
+                }
+            }
 
             switch (choice) {
                 case 1:
@@ -230,39 +276,65 @@ public class Main {
     private static void addEmployee(Scanner scanner, Employee[] employees) {
         System.out.println("\n=== Add Employee ===");
         System.out.println("Enter '0' to cancel and go back.");
-        System.out.print("Enter Employee ID: ");
-        String id = scanner.nextLine();
-        if (id.equals("0")) {
-            System.out.println("Cancelled. Returning to Manage Employees menu.");
-            return;
+
+        String id = "";
+        while (id.isEmpty()) {
+            System.out.print("Enter Employee ID: ");
+            id = scanner.nextLine();
+            if (id.equals("0")) {
+                System.out.println("Cancelled. Returning to Manage Employees menu.");
+                return;
+            } else if (id.isEmpty()) {
+                System.out.println("Employee ID cannot be empty. Please enter a valid ID.");
+            }
         }
 
-        System.out.print("Enter Employee Name: ");
-        String name = scanner.nextLine();
-        if (name.equals("0")) {
-            System.out.println("Cancelled. Returning to Manage Employees menu.");
-            return;
+        String name = "";
+        while (name.isEmpty()) {
+            System.out.print("Enter Employee Name: ");
+            name = scanner.nextLine();
+            if (name.equals("0")) {
+                System.out.println("Cancelled. Returning to Manage Employees menu.");
+                return;
+            } else if (name.isEmpty()) {
+                System.out.println("Employee Name cannot be empty. Please enter a valid name.");
+            }
         }
 
-        System.out.print("Enter Employee Position: ");
-        String position = scanner.nextLine();
-        if (position.equals("0")) {
-            System.out.println("Cancelled. Returning to Manage Employees menu.");
-            return;
+        String position = "";
+        while (position.isEmpty()) {
+            System.out.print("Enter Employee Position: ");
+            position = scanner.nextLine();
+            if (position.equals("0")) {
+                System.out.println("Cancelled. Returning to Manage Employees menu.");
+                return;
+            } else if (position.isEmpty()) {
+                System.out.println("Employee Position cannot be empty. Please enter a valid position.");
+            }
         }
 
-        System.out.print("Enter Employee Username: ");
-        String username = scanner.nextLine();
-        if (username.equals("0")) {
-            System.out.println("Cancelled. Returning to Manage Employees menu.");
-            return;
+        String username = "";
+        while (username.isEmpty()) {
+            System.out.print("Enter Employee Username: ");
+            username = scanner.nextLine();
+            if (username.equals("0")) {
+                System.out.println("Cancelled. Returning to Manage Employees menu.");
+                return;
+            } else if (username.isEmpty()) {
+                System.out.println("Employee Username cannot be empty. Please enter a valid username.");
+            }
         }
 
-        System.out.print("Enter Employee Password: ");
-        String password = scanner.nextLine();
-        if (password.equals("0")) {
-            System.out.println("Cancelled. Returning to Manage Employees menu.");
-            return;
+        String password = "";
+        while (password.isEmpty()) {
+            System.out.print("Enter Employee Password: ");
+            password = scanner.nextLine();
+            if (password.equals("0")) {
+                System.out.println("Cancelled. Returning to Manage Employees menu.");
+                return;
+            } else if (password.isEmpty()) {
+                System.out.println("Employee Password cannot be empty. Please enter a valid password.");
+            }
         }
 
         Employee newEmployee = new Employee(id, name, position, username, password);
@@ -305,19 +377,27 @@ public class Main {
 
     private static void editEmployee(Scanner scanner, Employee[] employees) {
         System.out.println("\n=== Edit Employee ===");
-        displayAllEmployees(employees);
+        displayAllEmployees(employees);  // แสดงรายการพนักงานทั้งหมด
         System.out.println("Enter '0' to cancel and go back.");
-        System.out.print("Enter Employee ID to edit: ");
-        String id = scanner.nextLine();
-        if (id.equals("0")) {
-            System.out.println("Cancelled. Returning to Manage Employees menu.");
-            return;
+
+        // ตรวจสอบการป้อน Employee ID
+        String id = "";
+        while (id.isEmpty()) {
+            System.out.print("Enter Employee ID to edit: ");
+            id = scanner.nextLine();
+            if (id.equals("0")) {
+                System.out.println("Cancelled. Returning to Manage Employees menu.");
+                return;
+            } else if (id.isEmpty()) {
+                System.out.println("Employee ID cannot be empty. Please enter a valid ID.");
+            }
         }
 
         for (int i = 0; i < employees.length; i++) {
             Employee emp = employees[i];
             if (emp.getId().equals(id)) {
                 System.out.println("Editing Employee: " + emp.getName());
+
                 System.out.print("Enter new name (or press Enter to keep current): ");
                 String newName = scanner.nextLine();
                 if (newName.equals("0")) {
@@ -387,9 +467,25 @@ public class Main {
             System.out.println("3. Edit Product");
             System.out.println("4. View Products");
             System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+
+            int choice = -1;
+            boolean validInput = false;
+
+            while (!validInput) {
+                System.out.print("Choose an option: ");
+                if (scanner.hasNextInt()) {
+                    choice = scanner.nextInt();
+                    scanner.nextLine();
+                    if (choice >= 0 && choice <= 4) {
+                        validInput = true;
+                    } else {
+                        System.out.println("Invalid option. Please choose a number between 0 and 4.");
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a valid number.");
+                    scanner.nextLine();
+                }
+            }
 
             switch (choice) {
                 case 1:
@@ -419,21 +515,63 @@ public class Main {
     }
 
     private static void addProduct(Scanner scanner, List<Product> products) {
-        System.out.println("\n=== Add Product ===");
-        System.out.print("Enter Product ID: ");
-        String productId = scanner.nextLine();
-        System.out.print("Enter Product Name: ");
-        String productName = scanner.nextLine();
-        System.out.print("Enter Product Price: ");
-        double price = scanner.nextDouble();
-        System.out.print("Enter Product Stock: ");
-        int stock = scanner.nextInt();
+        System.out.println("\n=== Add New Product ===");
+
+        // ตรวจสอบการป้อน Product ID
+        String productId = "";
+        while (productId.isEmpty()) {
+            System.out.print("Enter Product ID: ");
+            productId = scanner.nextLine();
+            if (productId.isEmpty()) {
+                System.out.println("Product ID cannot be empty. Please enter a valid ID.");
+            }
+        }
+
+        // ตรวจสอบการป้อน Product Name
+        String name = "";
+        while (name.isEmpty()) {
+            System.out.print("Enter Product Name: ");
+            name = scanner.nextLine();
+            if (name.isEmpty()) {
+                System.out.println("Product Name cannot be empty. Please enter a valid name.");
+            }
+        }
+
+        double price = -1;
+        while (price < 0) {
+            System.out.print("Enter Product Price: ");
+            if (scanner.hasNextDouble()) {
+                price = scanner.nextDouble();
+                if (price < 0) {
+                    System.out.println("Price cannot be negative. Please enter a valid price.");
+                }
+            } else {
+                System.out.println("Invalid price. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        int stock = -1;
+        while (stock < 0) {
+            System.out.print("Enter Product Stock: ");
+            if (scanner.hasNextInt()) {
+                stock = scanner.nextInt();
+                if (stock < 0) {
+                    System.out.println("Stock cannot be negative. Please enter a valid stock quantity.");
+                }
+            } else {
+                System.out.println("Invalid stock. Please enter a valid number.");
+                scanner.next();
+            }
+        }
         scanner.nextLine();
 
-        Product newProduct = new Product(productId, productName, price, stock);
+        LocalDate importDate = LocalDate.now();
+
+        Product newProduct = new Product(productId, name, price, stock, importDate);
         products.add(newProduct);
         Product.updateProductsJson(products);
-        System.out.println("Product added successfully.");
+        System.out.println("Product added successfully with today's import date: " + importDate);
     }
 
     private static void removeProduct(Scanner scanner, List<Product> products) {
@@ -467,32 +605,75 @@ public class Main {
             Product product = products.get(i);
             if (product.getProductId().equalsIgnoreCase(productId)) {
                 System.out.println("Editing Product: " + product.getName());
-                System.out.print("Enter new name (or press Enter to keep current): ");
-                String newName = scanner.nextLine();
-                System.out.print("Enter new price (or press Enter to keep current): ");
-                String newPrice = scanner.nextLine();
-                System.out.print("Enter new stock (or press Enter to keep current): ");
-                String newStock = scanner.nextLine();
 
-                if (!newName.isEmpty()) {
-                    product.setName(newName);
+                String newName = "";
+                while (true) {
+                    System.out.print("Enter new name (or press Enter to keep current): ");
+                    newName = scanner.nextLine();
+                    if (newName.isEmpty()) {
+                        break;
+                    } else {
+                        product.setName(newName);
+                        break;
+                    }
                 }
-                if (!newPrice.isEmpty()) {
+
+                String newPrice = "";
+                while (true) {
+                    System.out.print("Enter new price (or press Enter to keep current): ");
+                    newPrice = scanner.nextLine();
+                    if (newPrice.isEmpty()) {
+                        break;
+                    }
                     try {
                         double price = Double.parseDouble(newPrice);
-                        product.setPrice(price);
+                        if (price < 0) {
+                            System.out.println("Price cannot be negative.");
+                        } else {
+                            product.setPrice(price);
+                            break;
+                        }
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid price. Keeping the current price.");
+                        System.out.println("Invalid price. Please enter a valid number.");
                     }
                 }
-                if (!newStock.isEmpty()) {
+
+                String newStock = "";
+                while (true) {
+                    System.out.print("Enter new stock (or press Enter to keep current): ");
+                    newStock = scanner.nextLine();
+                    if (newStock.isEmpty()) {
+                        break;
+                    }
                     try {
                         int stock = Integer.parseInt(newStock);
-                        product.setStock(stock);
+                        if (stock < 0) {
+                            System.out.println("Stock cannot be negative.");
+                        } else {
+                            product.setStock(stock);
+                            break;
+                        }
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid stock. Keeping the current stock.");
+                        System.out.println("Invalid stock. Please enter a valid number.");
                     }
                 }
+
+                String newImportDate = "";
+                while (true) {
+                    System.out.print("Enter new import date (YYYY-MM-DD) or press Enter to keep current: ");
+                    newImportDate = scanner.nextLine();
+                    if (newImportDate.isEmpty()) {
+                        break;
+                    }
+                    try {
+                        LocalDate importDate = LocalDate.parse(newImportDate, DateTimeFormatter.ISO_DATE);
+                        product.setImportDate(importDate);
+                        break;
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Invalid date format. Please enter in the format YYYY-MM-DD.");
+                    }
+                }
+
                 Product.updateProductsJson(products);
                 System.out.println("Product updated successfully.");
                 return;
@@ -507,15 +688,19 @@ public class Main {
         if (products.isEmpty()) {
             System.out.println("No products available.");
         } else {
+            DecimalFormat df = new DecimalFormat("0.00");
+
             for (int i = 0; i < products.size(); i++) {
                 Product product = products.get(i);
-                System.out.println("ID: " + product.getProductId() + ", Name: " + product.getName()
-                        + ", Price: " + product.getPrice() + " THB, Stock: " + product.getStock());
+                System.out.println("ID: " + product.getProductId()
+                        + "| Name: " + product.getName()
+                        + "| Price: " + df.format(product.getPrice()) + " THB"
+                        + "| Stock: " + product.getStock()
+                        + "| Import Date: " + product.getImportDate());
             }
         }
     }
 
-    // ฟังก์ชันสำหรับการซื้อสินค้า
     private static void purchaseProducts(Scanner scanner, List<Product> products, Employee employee) {
         System.out.println("=== Purchase Products ===");
 
@@ -531,14 +716,15 @@ public class Main {
                         + ", Price: " + product.getPrice() + " THB, Stock: " + product.getStock());
             }
 
-            System.out.print("Choose a product to purchase (by Product ID) or type 'done' to finish: ");
-            String productId = scanner.nextLine();
+            Product selectedProduct = null;
+            while (selectedProduct == null) {
+                System.out.print("Choose a product to purchase (by Product ID) or type 'done' to finish: ");
+                String productId = scanner.nextLine();
 
-            if (productId.equalsIgnoreCase("done")) {
-                continuePurchasing = false;
-                System.out.println("Finished selecting products.");
-            } else {
-                Product selectedProduct = null;
+                if (productId.equalsIgnoreCase("done")) {
+                    continuePurchasing = false;
+                    break;
+                }
 
                 for (int i = 0; i < products.size(); i++) {
                     Product product = products.get(i);
@@ -548,7 +734,14 @@ public class Main {
                     }
                 }
 
-                if (selectedProduct != null) {
+                if (selectedProduct == null) {
+                    System.out.println("Invalid Product ID. Please try again.");
+                }
+            }
+
+            if (selectedProduct != null) {
+                boolean validQuantity = false;
+                while (!validQuantity) {
                     System.out.print("Enter quantity to purchase: ");
                     try {
                         int quantity = Integer.parseInt(scanner.nextLine());
@@ -558,15 +751,15 @@ public class Main {
                         } else if (quantity <= 0) {
                             System.out.println("Please enter a valid quantity.");
                         } else {
+                            selectedProduct.decreaseStock(quantity);
                             purchasedProducts.add(selectedProduct);
                             purchasedQuantities.add(quantity);
                             System.out.println("Added to cart: " + quantity + " of " + selectedProduct.getName());
+                            validQuantity = true;
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid quantity. Please enter a valid number.");
                     }
-                } else {
-                    System.out.println("Invalid Product ID. Please try again.");
                 }
             }
         }
@@ -581,9 +774,13 @@ public class Main {
             System.out.println("Press Enter to return to the main menu...");
             scanner.nextLine();
         } else {
-            System.out.println("No items were purchased.");
+            for (int i = 0; i < purchasedProducts.size(); i++) {
+                Product product = purchasedProducts.get(i);
+                int quantity = purchasedQuantities.get(i);
+                product.increaseStock(quantity);
+            }
+            System.out.println("No items were purchased. Stock has been restored.");
         }
-
     }
 
     private static void managePersonalInfo(Scanner scanner, Employee employee, List<Employee> employees) {
@@ -601,9 +798,25 @@ public class Main {
             System.out.println("3. Edit Username");
             System.out.println("4. Edit Password");
             System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+
+            int choice = -1;
+            boolean validInput = false;
+
+            while (!validInput) {
+                System.out.print("Choose an option: ");
+                if (scanner.hasNextInt()) {
+                    choice = scanner.nextInt();
+                    scanner.nextLine();
+                    if (choice >= 0 && choice <= 4) {
+                        validInput = true;
+                    } else {
+                        System.out.println("Invalid option. Please choose a number between 0 and 4.");
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a valid number.");
+                    scanner.next();
+                }
+            }
 
             boolean updated = false;
 

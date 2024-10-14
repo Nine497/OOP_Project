@@ -6,7 +6,9 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
+import java.text.DecimalFormat;
 
 public class Product {
 
@@ -14,12 +16,22 @@ public class Product {
     private String name;
     private double price;
     private int stock;
+    private LocalDate importDate;
 
-    public Product(String productId, String name, double price, int stock) {
+    public Product(String productId, String name, double price, int stock, LocalDate importDate) {
         this.productId = productId;
         this.name = name;
         this.price = price;
         this.stock = stock;
+        this.importDate = importDate;
+    }
+
+    public LocalDate getImportDate() {
+        return importDate;
+    }
+
+    public void setImportDate(LocalDate importDate) {
+        this.importDate = importDate;
     }
 
     public String getProductId() {
@@ -80,14 +92,18 @@ public class Product {
 
     public static void updateProductsJson(List<Product> products) {
         JSONArray productsJsonArray = new JSONArray();
+        DecimalFormat df = new DecimalFormat("0.00"); 
 
-        for (int i = 0; i < products.size(); i++) {
-            Product product = products.get(i);
+        for (Product product : products) {
             JSONObject productObject = new JSONObject();
             productObject.put("productId", product.getProductId());
             productObject.put("name", product.getName());
-            productObject.put("price", product.getPrice());
+
+            productObject.put("price", df.format(product.getPrice()));
+
             productObject.put("stock", product.getStock());
+
+            productObject.put("importDate", product.getImportDate().toString());
             productsJsonArray.add(productObject);
         }
 

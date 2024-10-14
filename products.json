@@ -2,25 +2,36 @@
     {
         "productId": "P001",
         "price": 45.00,
+        "importDate": "2024-10-14",
         "name": "Milk",
         "stock": 70
     },
     {
         "productId": "P002",
         "price": 35.00,
+        "importDate": "2024-10-13",
         "name": "Bread",
         "stock": 40
     },
     {
         "productId": "P003",
-        "price": 60.00,
+        "price": 60.50,
+        "importDate": "2024-10-12",
         "name": "Eggs",
         "stock": 125
     },
     {
         "productId": "P004",
-        "price": 150.00,
+        "price": 150.50,
+        "importDate": "2024-10-11",
         "name": "Butter",
         "stock": 30
+    },
+    {
+        "productId": "P006",
+        "price": 15.50,
+        "importDate": "2024-10-14",
+        "name": "Boss",
+        "stock": 20
     }
 ]
