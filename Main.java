@@ -732,7 +732,9 @@ public class Main {
     }
 
     private static void purchaseProducts(Scanner scanner, List<Product> products, Employee employee) {
-        System.out.println("=== Purchase Products ===");
+        System.out.println("===================================");
+        System.out.println("          PURCHASE PRODUCTS        ");
+        System.out.println("===================================");
 
         List<Product> purchasedProducts = new ArrayList<>();
         List<Integer> purchasedQuantities = new ArrayList<>();
@@ -935,7 +937,9 @@ public class Main {
                         monthlySales.getOrDefault(transactionMonthYear, 0.0) + totalAmount);
             }
 
-            System.out.println("\n=== Monthly Sales Report ===");
+            System.out.println("===================================");
+            System.out.println("       MONTHLY SALES REPORT        ");
+            System.out.println("===================================");
             for (Map.Entry<String, Double> entry : monthlySales.entrySet()) {
                 String monthYear = entry.getKey();
                 double totalSales = entry.getValue();
