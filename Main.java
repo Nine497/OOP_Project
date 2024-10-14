@@ -49,7 +49,17 @@ public class Main {
                 JSONObject productObject = (JSONObject) productsJsonArray.get(i);
                 String productId = (String) productObject.get("productId");
                 String productName = (String) productObject.get("name");
-                double price = (Double) productObject.get("price");
+
+                Object priceObj = productObject.get("price");
+                double price;
+                if (priceObj instanceof String) {
+                    price = Double.parseDouble((String) priceObj);
+                } else if (priceObj instanceof Double) {
+                    price = (Double) priceObj;
+                } else {
+                    throw new IllegalArgumentException("Invalid price format");
+                }
+
                 int stock = ((Long) productObject.get("stock")).intValue();
 
                 String importDateStr = (String) productObject.get("importDate");
@@ -61,12 +71,9 @@ public class Main {
 
             while (true) {
                 clearScreen();
-                System.out.println("_________________________________________________________________________________");
-                System.out.println("|                                                                                |");
-                System.out.println("|                              Welcome to the System                             |");
-                System.out.println("|                                                                                |");
-                System.out.println("|________________________________________________________________________________|");
-                System.out.println();
+                System.out.println("===================================");
+                System.out.println("    MAHANAKORN MINIMART LOGIN         ");
+                System.out.println("===================================");
 
                 System.out.print("  Enter username: ");
                 String inputUsername = scanner.nextLine();
@@ -206,7 +213,9 @@ public class Main {
 
         while (!backToMainMenu) {
             clearScreen();
-            System.out.println("=== Manage Employees ===");
+            System.out.println("===================================");
+            System.out.println("          MANAGE EMPLOYEE        ");
+            System.out.println("===================================");
             System.out.println("1. Add Employee");
             System.out.println("2. Remove Employee");
             System.out.println("3. Edit Employee");
@@ -260,7 +269,9 @@ public class Main {
     }
 
     private static void displayAllEmployees(Employee[] employees) {
-        System.out.println("\n=== List of Employees ===");
+        System.out.println("===================================");
+        System.out.println("           LIST EMPLOYEE        ");
+        System.out.println("===================================");
         if (employees.length == 0) {
             System.out.println("No employees available.");
         } else {
@@ -270,11 +281,13 @@ public class Main {
                         + " |  Position: " + emp.getPosition() + " | Username: " + emp.getUsername());
             }
         }
-        System.out.println("=======================================");
+        System.out.println("===================================");
     }
 
     private static void addEmployee(Scanner scanner, Employee[] employees) {
-        System.out.println("\n=== Add Employee ===");
+        System.out.println("===================================");
+        System.out.println("            ADD EMPLOYEE        ");
+        System.out.println("===================================");
         System.out.println("Enter '0' to cancel and go back.");
 
         String id = "";
@@ -346,7 +359,9 @@ public class Main {
     }
 
     private static void removeEmployee(Scanner scanner, Employee[] employees) {
-        System.out.println("\n=== Remove Employee ===");
+        System.out.println("===================================");
+        System.out.println("         REMOVE EMPLOYEE        ");
+        System.out.println("===================================");
         displayAllEmployees(employees);
         System.out.println("Enter '0' to cancel and go back.");
         System.out.print("Enter Employee ID to remove: ");
@@ -376,11 +391,12 @@ public class Main {
     }
 
     private static void editEmployee(Scanner scanner, Employee[] employees) {
-        System.out.println("\n=== Edit Employee ===");
-        displayAllEmployees(employees);  // แสดงรายการพนักงานทั้งหมด
+        System.out.println("===================================");
+        System.out.println("           EDIT EMPLOYEE        ");
+        System.out.println("===================================");
+        displayAllEmployees(employees);
         System.out.println("Enter '0' to cancel and go back.");
 
-        // ตรวจสอบการป้อน Employee ID
         String id = "";
         while (id.isEmpty()) {
             System.out.print("Enter Employee ID to edit: ");
@@ -449,7 +465,9 @@ public class Main {
     }
 
     private static void viewEmployees(Employee[] employees) {
-        System.out.println("\n=== View Employees ===");
+        System.out.println("===================================");
+        System.out.println("           VIEW EMPLOYEES        ");
+        System.out.println("===================================");
         displayAllEmployees(employees);
         System.out.println("Press Enter to return to the Manage Employees menu...");
         Scanner scanner = new Scanner(System.in);
@@ -461,7 +479,9 @@ public class Main {
 
         while (!backToMainMenu) {
             clearScreen();
-            System.out.println("=== Manage Products ===");
+            System.out.println("===================================");
+            System.out.println("          MANAGE PRODUCTS        ");
+            System.out.println("===================================");
             System.out.println("1. Add Product");
             System.out.println("2. Remove Product");
             System.out.println("3. Edit Product");
@@ -515,9 +535,10 @@ public class Main {
     }
 
     private static void addProduct(Scanner scanner, List<Product> products) {
-        System.out.println("\n=== Add New Product ===");
+        System.out.println("===================================");
+        System.out.println("          ADD NEW PRODUCT        ");
+        System.out.println("===================================");
 
-        // ตรวจสอบการป้อน Product ID
         String productId = "";
         while (productId.isEmpty()) {
             System.out.print("Enter Product ID: ");
@@ -527,7 +548,6 @@ public class Main {
             }
         }
 
-        // ตรวจสอบการป้อน Product Name
         String name = "";
         while (name.isEmpty()) {
             System.out.print("Enter Product Name: ");
@@ -575,7 +595,9 @@ public class Main {
     }
 
     private static void removeProduct(Scanner scanner, List<Product> products) {
-        System.out.println("\n=== Remove Product ===");
+        System.out.println("===================================");
+        System.out.println("          REMOVE PRODUCT        ");
+        System.out.println("===================================");
         System.out.print("Enter Product ID to remove: ");
         String productId = scanner.nextLine();
 
@@ -597,7 +619,10 @@ public class Main {
     }
 
     private static void editProduct(Scanner scanner, List<Product> products) {
-        System.out.println("\n=== Edit Product ===");
+        System.out.println("===================================");
+        System.out.println("            EDIT PRODUCT        ");
+        System.out.println("===================================");
+        viewProducts(products);
         System.out.print("Enter Product ID to edit: ");
         String productId = scanner.nextLine();
 
@@ -684,7 +709,9 @@ public class Main {
     }
 
     private static void viewProducts(List<Product> products) {
-        System.out.println("\n=== View Products ===");
+        System.out.println("===================================");
+        System.out.println("           VIEW PRODUCTS        ");
+        System.out.println("===================================");
         if (products.isEmpty()) {
             System.out.println("No products available.");
         } else {
@@ -699,6 +726,7 @@ public class Main {
                         + "| Import Date: " + product.getImportDate());
             }
         }
+        System.out.println("===================================");
     }
 
     private static void purchaseProducts(Scanner scanner, List<Product> products, Employee employee) {
@@ -787,12 +815,14 @@ public class Main {
         boolean backToMainMenu = false;
         while (!backToMainMenu) {
             clearScreen();
-            System.out.println("=== Manage Personal Information ===");
+            System.out.println("===================================");
+            System.out.println("    MANAGE PERSONAL INFOMATION     ");
+            System.out.println("===================================");
             System.out.println("Current Information:");
             System.out.println("Name: " + employee.getName());
             System.out.println("Position: " + employee.getPosition());
             System.out.println("Username: " + employee.getUsername());
-            System.out.println("-----------------------------------");
+            System.out.println("===================================");
             System.out.println("1. Edit Name");
             System.out.println("2. Edit Position");
             System.out.println("3. Edit Username");

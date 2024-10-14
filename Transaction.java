@@ -1,7 +1,10 @@
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -30,7 +33,6 @@ public class Transaction {
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
             int quantity = quantities.get(i);
-            product.decreaseStock(quantity);
         }
         System.out.println("Transaction processed: " + this);
         saveTransactionToJson();
@@ -67,11 +69,24 @@ public class Transaction {
         transactionJson.put("purchasedItems", purchasedItems);
         transactionJson.put("totalAmount", totalAmount);
 
-        try (FileWriter fileWriter = new FileWriter("transaction.json", true)) {
-            fileWriter.write(transactionJson.toJSONString());
-            fileWriter.write(System.lineSeparator());
+        JSONParser parser = new JSONParser();
+        JSONArray transactionsArray = new JSONArray();
+
+        try (FileReader reader = new FileReader("transaction.json")) {
+            Object obj = parser.parse(reader);
+            if (obj instanceof JSONArray) {
+                transactionsArray = (JSONArray) obj;
+            }
+        } catch (IOException | ParseException e) {
+            System.out.println("Error loading transaction data: " + e.getMessage());
+        }
+
+        transactionsArray.add(transactionJson);
+
+        try (FileWriter fileWriter = new FileWriter("transaction.json")) {
+            fileWriter.write(transactionsArray.toJSONString());
             fileWriter.flush();
-            System.out.println("Transaction saved to Transaction.json.");
+            System.out.println("Transaction saved to transaction.json.");
         } catch (IOException e) {
             System.out.println("Error writing to Transaction.json file: " + e.getMessage());
         }
