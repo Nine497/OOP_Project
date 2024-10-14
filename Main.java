@@ -100,7 +100,9 @@ public class Main {
                     boolean exit = false;
                     while (!exit) {
                         clearScreen();
-                        System.out.println("\n=== Main Menu ===");
+                        System.out.println("===================================");
+                        System.out.println("             MAIN MENU        ");
+                        System.out.println("===================================");
                         System.out.println("1. Manage Products");
                         System.out.println("2. Purchase Products");
                         System.out.println("3. Manage Personal Information");
