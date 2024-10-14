@@ -86,7 +86,7 @@ public class Product {
         }
     }
 
-    public void editProduct(String newName, Double newPrice, Integer newStock) {
+    public void editProduct(String newName, Double newPrice, Integer newStock, Category newCategory) {
         if (newName != null && !newName.isEmpty()) {
             setName(newName);
         }
@@ -95,6 +95,9 @@ public class Product {
         }
         if (newStock != null && newStock >= 0) {
             setStock(newStock);
+        }
+        if (newCategory != null) { 
+            setCategory(newCategory);
         }
     }
 

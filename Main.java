@@ -527,7 +527,7 @@ public class Main {
                     removeProduct(scanner, products);
                     break;
                 case 3:
-                    editProduct(scanner, products);
+                    editProduct(scanner, products, category);
                     break;
                 case 4:
                     viewProducts(products);
@@ -608,7 +608,7 @@ public class Main {
                 scanner.next();
             }
         }
-        scanner.nextLine(); 
+        scanner.nextLine();
 
         showCategories();
 
@@ -647,7 +647,7 @@ public class Main {
                 String newCategoryName = scanner.nextLine();
                 selectedCategory = new Category(newCategoryId, newCategoryName);
                 categories.add(selectedCategory);
-                isValidCategory = true; 
+                isValidCategory = true;
             } else {
                 for (int i = 0; i < categories.size(); i++) {
                     Category category = categories.get(i);
@@ -696,9 +696,9 @@ public class Main {
         }
     }
 
-    private static void editProduct(Scanner scanner, List<Product> products) {
+    private static void editProduct(Scanner scanner, List<Product> products, List<Category> categories) {
         System.out.println("===================================");
-        System.out.println("            EDIT PRODUCT        ");
+        System.out.println("            EDIT PRODUCT           ");
         System.out.println("===================================");
         viewProducts(products);
         System.out.print("Enter Product ID to edit: ");
@@ -709,21 +709,15 @@ public class Main {
             if (product.getProductId().equalsIgnoreCase(productId)) {
                 System.out.println("Editing Product: " + product.getName());
 
-                String newName = "";
-                while (true) {
-                    System.out.print("Enter new name (or press Enter to keep current): ");
-                    newName = scanner.nextLine();
-                    if (newName.isEmpty()) {
-                        break;
-                    } else {
-                        product.setName(newName);
-                        break;
-                    }
+                System.out.print("Enter new name (or press Enter to keep current: " + product.getName() + "): ");
+                String newName = scanner.nextLine();
+                if (!newName.isEmpty()) {
+                    product.setName(newName);
                 }
 
                 String newPrice = "";
                 while (true) {
-                    System.out.print("Enter new price (or press Enter to keep current): ");
+                    System.out.print("Enter new price (or press Enter to keep current: " + product.getPrice() + "): ");
                     newPrice = scanner.nextLine();
                     if (newPrice.isEmpty()) {
                         break;
@@ -743,7 +737,7 @@ public class Main {
 
                 String newStock = "";
                 while (true) {
-                    System.out.print("Enter new stock (or press Enter to keep current): ");
+                    System.out.print("Enter new stock (or press Enter to keep current: " + product.getStock() + "): ");
                     newStock = scanner.nextLine();
                     if (newStock.isEmpty()) {
                         break;
@@ -763,7 +757,7 @@ public class Main {
 
                 String newImportDate = "";
                 while (true) {
-                    System.out.print("Enter new import date (YYYY-MM-DD) or press Enter to keep current: ");
+                    System.out.print("Enter new import date (YYYY-MM-DD) or press Enter to keep current: " + product.getImportDate() + "): ");
                     newImportDate = scanner.nextLine();
                     if (newImportDate.isEmpty()) {
                         break;
@@ -775,6 +769,63 @@ public class Main {
                     } catch (DateTimeParseException e) {
                         System.out.println("Invalid date format. Please enter in the format YYYY-MM-DD.");
                     }
+                }
+
+                showCategories();
+                System.out.print("Enter Category ID or press Enter to keep current: " + product.getCategory().getCategoryName() + "): ");
+                String categoryId = scanner.nextLine();
+                Category selectedCategory = null;
+
+                if (!categoryId.isEmpty()) {
+                    if (categoryId.equalsIgnoreCase("new")) {
+                        String newCategoryId = "";
+                        boolean isCategoryIdAlreadyExists = false;
+
+                        while (newCategoryId.isEmpty() || isCategoryIdAlreadyExists) {
+                            System.out.print("Enter New Category ID (or press Enter to keep current: " + product.getCategory().getCategoryId() + "): ");
+                            newCategoryId = scanner.nextLine();
+
+                            if (newCategoryId.isEmpty()) {
+                                System.out.println("Using the current category: " + product.getCategory().getCategoryName());
+                                selectedCategory = product.getCategory();
+                                break;
+                            }
+
+                            isCategoryIdAlreadyExists = false;
+                            for (int j = 0; j < categories.size(); j++) {
+                                Category category = categories.get(j);
+                                if (category.getCategoryId().equalsIgnoreCase(newCategoryId)) {
+                                    isCategoryIdAlreadyExists = true;
+                                    System.out.println("Category ID already exists. Please enter a unique ID.");
+                                    break;
+                                }
+                            }
+
+                            if (!isCategoryIdAlreadyExists) {
+                                System.out.print("Enter New Category Name: ");
+                                String newCategoryName = scanner.nextLine();
+                                selectedCategory = new Category(newCategoryId, newCategoryName);
+                                categories.add(selectedCategory);
+                            }
+                        }
+                    } else {
+                        while (selectedCategory == null) {
+                            for (int j = 0; j < categories.size(); j++) {
+                                Category category = categories.get(j);
+                                if (category.getCategoryId().equalsIgnoreCase(categoryId)) {
+                                    selectedCategory = category;
+                                    break;
+                                }
+                            }
+
+                            if (selectedCategory == null) {
+                                System.out.print("Invalid Category ID. Please enter a valid Category ID: ");
+                                categoryId = scanner.nextLine();
+                            }
+                        }
+                    }
+
+                    product.setCategory(selectedCategory);
                 }
 
                 Product.updateProductsJson(products);
