@@ -1,4 +1,4 @@
-javac -cp lib/json-simple-1.1.1.jar Main.java Employee.java Product.java Transaction.java
+javac -cp lib/json-simple-1.1.1.jar *.java
 
 
 java -cp .;lib/json-simple-1.1.1.jar Main

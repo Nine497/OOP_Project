@@ -6,7 +6,6 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,6 +19,8 @@ import java.time.format.DateTimeParseException;
 import java.text.DecimalFormat;
 
 public class Main {
+
+    private static List<Category> categories = new ArrayList<>();
 
     public static void main(String[] args) {
         JSONParser parser = new JSONParser();
@@ -61,11 +62,20 @@ public class Main {
                 }
 
                 int stock = ((Long) productObject.get("stock")).intValue();
-
                 String importDateStr = (String) productObject.get("importDate");
                 LocalDate importDate = LocalDate.parse(importDateStr, DateTimeFormatter.ISO_DATE);
 
-                Product product = new Product(productId, productName, price, stock, importDate);
+                String categoryId = (String) productObject.get("categoryId");
+                String categoryName = (String) productObject.get("category");
+
+                Category category = Category.findCategoryById(categoryId, categories);
+
+                if (category == null) {
+                    category = new Category(categoryId, categoryName);
+                    categories.add(category);
+                }
+
+                Product product = new Product(productId, productName, price, stock, importDate, category);
                 products.add(product);
             }
 
@@ -145,7 +155,7 @@ public class Main {
                             switch (choice) {
                                 case 1:
                                     clearScreen();
-                                    manageProducts(scanner, products);
+                                    manageProducts(scanner, products, categories);
                                     break;
                                 case 2:
                                     clearScreen();
@@ -177,7 +187,7 @@ public class Main {
                             switch (choice) {
                                 case 1:
                                     clearScreen();
-                                    manageProducts(scanner, products);
+                                    manageProducts(scanner, products, categories);
                                     break;
                                 case 2:
                                     clearScreen();
@@ -476,7 +486,7 @@ public class Main {
         scanner.nextLine();
     }
 
-    private static void manageProducts(Scanner scanner, List<Product> products) {
+    private static void manageProducts(Scanner scanner, List<Product> products, List<Category> category) {
         boolean backToMainMenu = false;
 
         while (!backToMainMenu) {
@@ -511,7 +521,7 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    addProduct(scanner, products);
+                    addProduct(scanner, products, category);
                     break;
                 case 2:
                     removeProduct(scanner, products);
@@ -536,15 +546,27 @@ public class Main {
         }
     }
 
-    private static void addProduct(Scanner scanner, List<Product> products) {
+    private static void addProduct(Scanner scanner, List<Product> products, List<Category> categories) {
         System.out.println("===================================");
-        System.out.println("          ADD NEW PRODUCT        ");
+        System.out.println("          ADD NEW PRODUCT          ");
         System.out.println("===================================");
 
         String productId = "";
-        while (productId.isEmpty()) {
+        boolean isProductIdAlreadyExists = false;
+        while (productId.isEmpty() || isProductIdAlreadyExists) {
             System.out.print("Enter Product ID: ");
             productId = scanner.nextLine();
+
+            isProductIdAlreadyExists = false;
+            for (int i = 0; i < products.size(); i++) {
+                Product product = products.get(i);
+                if (product.getProductId().equalsIgnoreCase(productId)) {
+                    isProductIdAlreadyExists = true;
+                    System.out.println("Product ID already exists. Please enter a unique ID.");
+                    break;
+                }
+            }
+
             if (productId.isEmpty()) {
                 System.out.println("Product ID cannot be empty. Please enter a valid ID.");
             }
@@ -586,12 +608,66 @@ public class Main {
                 scanner.next();
             }
         }
-        scanner.nextLine();
+        scanner.nextLine(); 
+
+        showCategories();
+
+        String categoryId = "";
+        Category selectedCategory = null;
+        boolean isValidCategory = false;
+
+        while (!isValidCategory) {
+            System.out.print("Enter Category ID or type 'new' to create a new category: ");
+            categoryId = scanner.nextLine();
+
+            if (categoryId.equalsIgnoreCase("new")) {
+                String newCategoryId = "";
+                boolean isCategoryIdAlreadyExists = false;
+
+                while (newCategoryId.isEmpty() || isCategoryIdAlreadyExists) {
+                    System.out.print("Enter New Category ID: ");
+                    newCategoryId = scanner.nextLine();
+
+                    isCategoryIdAlreadyExists = false;
+                    for (int i = 0; i < categories.size(); i++) {
+                        Category category = categories.get(i);
+                        if (category.getCategoryId().equalsIgnoreCase(newCategoryId)) {
+                            isCategoryIdAlreadyExists = true;
+                            System.out.println("Category ID already exists. Please enter a unique ID.");
+                            break;
+                        }
+                    }
+
+                    if (newCategoryId.isEmpty()) {
+                        System.out.println("Category ID cannot be empty. Please enter a valid ID.");
+                    }
+                }
+
+                System.out.print("Enter New Category Name: ");
+                String newCategoryName = scanner.nextLine();
+                selectedCategory = new Category(newCategoryId, newCategoryName);
+                categories.add(selectedCategory);
+                isValidCategory = true; 
+            } else {
+                for (int i = 0; i < categories.size(); i++) {
+                    Category category = categories.get(i);
+                    if (category.getCategoryId().equalsIgnoreCase(categoryId)) {
+                        selectedCategory = category;
+                        isValidCategory = true;
+                        break;
+                    }
+                }
+
+                if (!isValidCategory) {
+                    System.out.println("Invalid Category ID. Please enter a valid Category ID.");
+                }
+            }
+        }
 
         LocalDate importDate = LocalDate.now();
-
-        Product newProduct = new Product(productId, name, price, stock, importDate);
+        Product newProduct = new Product(productId, name, price, stock, importDate, selectedCategory);
         products.add(newProduct);
+
         Product.updateProductsJson(products);
         System.out.println("Product added successfully with today's import date: " + importDate);
     }
@@ -712,7 +788,7 @@ public class Main {
 
     private static void viewProducts(List<Product> products) {
         System.out.println("===================================");
-        System.out.println("           VIEW PRODUCTS        ");
+        System.out.println("           VIEW PRODUCTS           ");
         System.out.println("===================================");
         if (products.isEmpty()) {
             System.out.println("No products available.");
@@ -722,10 +798,11 @@ public class Main {
             for (int i = 0; i < products.size(); i++) {
                 Product product = products.get(i);
                 System.out.println("ID: " + product.getProductId()
-                        + "| Name: " + product.getName()
-                        + "| Price: " + df.format(product.getPrice()) + " THB"
-                        + "| Stock: " + product.getStock()
-                        + "| Import Date: " + product.getImportDate());
+                        + " | Name: " + product.getName()
+                        + " | Price: " + df.format(product.getPrice()) + " THB"
+                        + " | Stock: " + product.getStock()
+                        + " | Import Date: " + product.getImportDate()
+                        + " | Category: " + product.getCategory().getCategoryName());
             }
         }
         System.out.println("===================================");
@@ -813,6 +890,18 @@ public class Main {
             }
             System.out.println("No items were purchased. Stock has been restored.");
         }
+    }
+
+    private static void showCategories() {
+        System.out.println("===================================");
+        System.out.println("        LIST OF ALL CATEGORIES     ");
+        System.out.println("===================================");
+        for (int i = 0; i < categories.size(); i++) {
+            Category category = categories.get(i);
+            System.out.println("ID: " + category.getCategoryId() + " | Name: " + category.getCategoryName());
+        }
+
+        System.out.println("===================================");
     }
 
     private static void managePersonalInfo(Scanner scanner, Employee employee, List<Employee> employees) {

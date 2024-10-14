@@ -1,8 +1,6 @@
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,13 +15,15 @@ public class Product {
     private double price;
     private int stock;
     private LocalDate importDate;
+    private Category category;
 
-    public Product(String productId, String name, double price, int stock, LocalDate importDate) {
+    public Product(String productId, String name, double price, int stock, LocalDate importDate, Category category) {
         this.productId = productId;
         this.name = name;
         this.price = price;
         this.stock = stock;
         this.importDate = importDate;
+        this.category = category;
     }
 
     public LocalDate getImportDate() {
@@ -48,6 +48,14 @@ public class Product {
 
     public int getStock() {
         return stock;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public void setName(String name) {
@@ -92,18 +100,22 @@ public class Product {
 
     public static void updateProductsJson(List<Product> products) {
         JSONArray productsJsonArray = new JSONArray();
-        DecimalFormat df = new DecimalFormat("0.00"); 
+        DecimalFormat df = new DecimalFormat("0.00");
 
-        for (Product product : products) {
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+
             JSONObject productObject = new JSONObject();
             productObject.put("productId", product.getProductId());
             productObject.put("name", product.getName());
 
             productObject.put("price", df.format(product.getPrice()));
-
             productObject.put("stock", product.getStock());
-
             productObject.put("importDate", product.getImportDate().toString());
+
+            productObject.put("categoryId", product.getCategory().getCategoryId());
+            productObject.put("category", product.getCategory().getCategoryName());
+
             productsJsonArray.add(productObject);
         }
 
@@ -114,4 +126,5 @@ public class Product {
             System.out.println("An error occurred while updating the products JSON file: " + e.getMessage());
         }
     }
+
 }

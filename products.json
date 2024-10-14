@@ -1,1 +1,38 @@
-[{"productId":"P001","price":"45.00","importDate":"2024-10-14","name":"Milk","stock":160},{"productId":"P002","price":"35.00","importDate":"2024-10-13","name":"Bread","stock":180},{"productId":"P003","price":"60.50","importDate":"2024-10-12","name":"Eggs","stock":200},{"productId":"P004","price":"150.50","importDate":"2024-10-11","name":"Butter","stock":200}]
+[
+    {
+        "productId": "P001",
+        "price": "45.00",
+        "importDate": "2024-10-14",
+        "name": "Milk",
+        "stock": 160,
+        "categoryId": "C001",
+        "category": "Dairy"
+    },
+    {
+        "productId": "P002",
+        "price": "35.00",
+        "importDate": "2024-10-13",
+        "name": "Bread",
+        "stock": 180,
+        "categoryId": "C002",
+        "category": "Bakery"
+    },
+    {
+        "productId": "P003",
+        "price": "60.50",
+        "importDate": "2024-10-12",
+        "name": "Eggs",
+        "stock": 200,
+        "categoryId": "C003",
+        "category": "Poultry"
+    },
+    {
+        "productId": "P004",
+        "price": "150.50",
+        "importDate": "2024-10-11",
+        "name": "Butter",
+        "stock": 200,
+        "categoryId": "C001",
+        "category": "Dairy"
+    }
+]
