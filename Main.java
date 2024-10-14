@@ -118,7 +118,7 @@ public class Main {
                         System.out.println("3. Manage Personal Information");
                         if ("Manager".equalsIgnoreCase(loggedInEmployee.getPosition())) {
                             System.out.println("4. Manage Employees");
-                            System.out.println("5. View Sales Report");
+                            System.out.println("5. Daily Report");
                             System.out.println("6. Logout");
                         } else {
                             System.out.println("4. Logout");
@@ -172,7 +172,7 @@ public class Main {
                                     break;
                                 case 5:
                                     clearScreen();
-                                    generateMonthlyReport();
+                                    showDailyReport(scanner);
                                     break;
                                 case 6:
                                     System.out.println("Logging out...");
@@ -870,10 +870,9 @@ public class Main {
         boolean continuePurchasing = true;
         while (continuePurchasing) {
             System.out.println("\nAvailable Products:");
-            for (int i = 0; i < products.size(); i++) {
-                Product product = products.get(i);
-                System.out.println("Product ID: " + product.getProductId() + ", Name: " + product.getName()
-                        + ", Price: " + product.getPrice() + " THB, Stock: " + product.getStock());
+            for (Product product : products) {
+                System.out.println("Product ID: " + product.getProductId() + " | Name: " + product.getName()
+                        + " | Price: " + product.getPrice() + " THB | Stock: " + product.getStock());
             }
 
             Product selectedProduct = null;
@@ -886,8 +885,7 @@ public class Main {
                     break;
                 }
 
-                for (int i = 0; i < products.size(); i++) {
-                    Product product = products.get(i);
+                for (Product product : products) {
                     if (product.getProductId().equalsIgnoreCase(productId)) {
                         selectedProduct = product;
                         break;
@@ -911,9 +909,14 @@ public class Main {
                         } else if (quantity <= 0) {
                             System.out.println("Please enter a valid quantity.");
                         } else {
-                            selectedProduct.decreaseStock(quantity);
-                            purchasedProducts.add(selectedProduct);
-                            purchasedQuantities.add(quantity);
+                            int index = purchasedProducts.indexOf(selectedProduct);
+                            if (index != -1) {
+                                purchasedQuantities.set(index, purchasedQuantities.get(index) + quantity);
+                            } else {
+                                selectedProduct.decreaseStock(quantity);
+                                purchasedProducts.add(selectedProduct);
+                                purchasedQuantities.add(quantity);
+                            }
                             System.out.println("Added to cart: " + quantity + " of " + selectedProduct.getName());
                             validQuantity = true;
                         }
@@ -934,11 +937,6 @@ public class Main {
             System.out.println("Press Enter to return to the main menu...");
             scanner.nextLine();
         } else {
-            for (int i = 0; i < purchasedProducts.size(); i++) {
-                Product product = purchasedProducts.get(i);
-                int quantity = purchasedQuantities.get(i);
-                product.increaseStock(quantity);
-            }
             System.out.println("No items were purchased. Stock has been restored.");
         }
     }
@@ -1045,40 +1043,27 @@ public class Main {
         }
     }
 
-    public static void generateMonthlyReport() {
-        JSONParser parser = new JSONParser();
-        Map<String, Double> monthlySales = new HashMap<>();
-        Scanner scanner = new Scanner(System.in);
-        try {
-            FileReader reader = new FileReader("transaction.json");
-            JSONArray transactionsArray = (JSONArray) parser.parse(reader);
+    public static void showDailyReport(Scanner scanner) {
+        boolean backToMainMenu = false;
 
-            for (int i = 0; i < transactionsArray.size(); i++) {
-                JSONObject transactionObject = (JSONObject) transactionsArray.get(i);
-                String dateTime = (String) transactionObject.get("dateTime");
-                String transactionMonthYear = dateTime.substring(0, 7);
+        while (!backToMainMenu) {
+            System.out.println("===================================");
+            System.out.println("         SHOW DAILY REPORT        ");
+            System.out.println("===================================");
+            System.out.print("Enter the date to view transactions (YYYY-MM-DD) or press Enter to exit: ");
+            String inputDate = scanner.nextLine();
 
-                Number totalAmountNumber = (Number) transactionObject.get("totalAmount");
-                double totalAmount = totalAmountNumber.doubleValue();
-
-                monthlySales.put(transactionMonthYear,
-                        monthlySales.getOrDefault(transactionMonthYear, 0.0) + totalAmount);
+            if (inputDate.isEmpty()) {
+                System.out.println("Exiting Daily Report...");
+                backToMainMenu = true;
+                continue;
             }
 
-            System.out.println("===================================");
-            System.out.println("       MONTHLY SALES REPORT        ");
-            System.out.println("===================================");
-            for (Map.Entry<String, Double> entry : monthlySales.entrySet()) {
-                String monthYear = entry.getKey();
-                double totalSales = entry.getValue();
-                System.out.println("Year-Month: " + monthYear + " | Total Sales: " + totalSales + " THB");
-            }
-        } catch (IOException | ParseException e) {
-            System.out.println("An error occurred while generating the sales report: " + e.getMessage());
+            Transaction.generateDailyReport(inputDate);
+
+            System.out.println("\nPress Enter to return to the Main menu...");
+            scanner.nextLine();
         }
-
-        System.out.println("\nPress Enter to return to the main menu...");
-        scanner.nextLine();
     }
 
     public final static void clearScreen() {

@@ -1,1 +1,80 @@
-[{"dateTime":"2024-10-14 20:28:19","totalAmount":400.0,"purchasedItems":[{"quantity":5,"productId":"P001","totalPrice":225.0,"name":"Milk","pricePerUnit":45.0},{"quantity":5,"productId":"P002","totalPrice":175.0,"name":"Bread","pricePerUnit":35.0}],"employee":"Sumet Thongain","transactionId":"T1728912499129"},{"dateTime":"2024-10-14 20:28:58","totalAmount":400.0,"purchasedItems":[{"quantity":5,"productId":"P001","totalPrice":225.0,"name":"Milk","pricePerUnit":45.0},{"quantity":5,"productId":"P002","totalPrice":175.0,"name":"Bread","pricePerUnit":35.0}],"employee":"Sumet Thongain","transactionId":"T1728912538820"},{"dateTime":"2024-10-14 20:29:48","totalAmount":225.0,"purchasedItems":[{"quantity":5,"productId":"P001","totalPrice":225.0,"name":"Milk","pricePerUnit":45.0}],"employee":"Sumet Thongain","transactionId":"T1728912588476"},{"dateTime":"2024-10-14 20:32:06","totalAmount":450.0,"purchasedItems":[{"quantity":10,"productId":"P001","totalPrice":450.0,"name":"Milk","pricePerUnit":45.0}],"employee":"Sumet Thongain","transactionId":"T1728912726206"}]
+[
+    {
+        "dateTime": "2024-10-14 20:28:19",
+        "totalAmount": 400,
+        "purchasedItems": 
+        [
+            {
+                "quantity": 5,
+                "productId": "P001",
+                "totalPrice": 225,
+                "name": "Milk",
+                "pricePerUnit": 45
+            },
+            {
+                "quantity": 5,
+                "productId": "P002",
+                "totalPrice": 175,
+                "name": "Bread",
+                "pricePerUnit": 35
+            }
+        ],
+        "employee": "Sumet Thongain",
+        "transactionId": "T1728912499129"
+    },
+    {
+        "dateTime": "2024-10-14 20:28:58",
+        "totalAmount": 400,
+        "purchasedItems": 
+        [
+            {
+                "quantity": 5,
+                "productId": "P001",
+                "totalPrice": 225,
+                "name": "Milk",
+                "pricePerUnit": 45
+            },
+            {
+                "quantity": 5,
+                "productId": "P002",
+                "totalPrice": 175,
+                "name": "Bread",
+                "pricePerUnit": 35
+            }
+        ],
+        "employee": "Sumet Thongain",
+        "transactionId": "T1728912538820"
+    },
+    {
+        "dateTime": "2024-10-14 20:29:48",
+        "totalAmount": 225,
+        "purchasedItems": 
+        [
+            {
+                "quantity": 5,
+                "productId": "P001",
+                "totalPrice": 225,
+                "name": "Milk",
+                "pricePerUnit": 45
+            }
+        ],
+        "employee": "Sumet Thongain",
+        "transactionId": "T1728912588476"
+    },
+    {
+        "dateTime": "2024-10-14 20:32:06",
+        "totalAmount": 450,
+        "purchasedItems": 
+        [
+            {
+                "quantity": 10,
+                "productId": "P001",
+                "totalPrice": 450,
+                "name": "Milk",
+                "pricePerUnit": 45
+            }
+        ],
+        "employee": "Sumet Thongain",
+        "transactionId": "T1728912726206"
+    }
+]

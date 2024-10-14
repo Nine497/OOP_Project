@@ -137,4 +137,62 @@ public class Transaction {
     public List<Integer> getQuantities() {
         return quantities;
     }
+
+    public static void generateDailyReport(String inputDate) {
+        JSONParser parser = new JSONParser();
+
+        try {
+            FileReader reader = new FileReader("transaction.json");
+            JSONArray transactionsArray = (JSONArray) parser.parse(reader);
+
+            System.out.println("===================================");
+            System.out.println("     DAILY TRANSACTION REPORT      ");
+            System.out.println("===================================");
+            boolean transactionsFound = false;
+
+            for (int i = 0; i < transactionsArray.size(); i++) {
+                JSONObject transactionObject = (JSONObject) transactionsArray.get(i);
+                String dateTime = (String) transactionObject.get("dateTime");
+                String transactionDate = dateTime.substring(0, 10);
+
+                if (transactionDate.equals(inputDate)) {
+                    transactionsFound = true;
+
+                    String transactionId = (String) transactionObject.get("transactionId");
+                    String employee = (String) transactionObject.get("employee");
+                    Number totalAmountNumber = (Number) transactionObject.get("totalAmount");
+                    double totalAmount = totalAmountNumber.doubleValue();
+                    System.out.println("===================================");
+                    System.out.println("Transaction ID: " + transactionId);
+                    System.out.println("===================================");
+                    System.out.println("Employee: " + employee);
+                    System.out.println("Total Amount: " + totalAmount + " THB");
+                    System.out.println("DateTime: " + dateTime);
+                    System.out.println("-----------------------------------");
+
+                    JSONArray purchasedItems = (JSONArray) transactionObject.get("purchasedItems");
+                    for (int j = 0; j < purchasedItems.size(); j++) {
+                        JSONObject item = (JSONObject) purchasedItems.get(j);
+                        String productId = (String) item.get("productId");
+                        String productName = (String) item.get("name");
+                        int quantity = ((Long) item.get("quantity")).intValue();
+                        double totalPrice = ((Number) item.get("totalPrice")).doubleValue();
+
+                        System.out.println("Product ID: " + productId);
+                        System.out.println("Product Name: " + productName);
+                        System.out.println("Quantity: " + quantity);
+                        System.out.println("Total Price: " + totalPrice + " THB");
+                        System.out.println("-----------------------------------");
+                    }
+                }
+            }
+            
+            if (!transactionsFound) {
+                System.out.println("No transactions found for the selected date: " + inputDate);
+            }
+
+        } catch (IOException | ParseException e) {
+            System.out.println("An error occurred while generating the daily transaction report: " + e.getMessage());
+        }
+    }
 }
