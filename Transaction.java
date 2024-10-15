@@ -29,6 +29,44 @@ public class Transaction {
         processTransaction();
     }
 
+    public void calChange(String moneyReceivedStr) {
+        try {
+            double moneyReceived = Double.parseDouble(moneyReceivedStr);
+            double totalAmount = 0.0;
+
+            for (int i = 0; i < products.size(); i++) {
+                Product product = products.get(i);
+                int quantity = quantities.get(i);
+                totalAmount += product.getPrice() * quantity;
+            }
+
+            double change = moneyReceived - totalAmount;
+
+            if (change < 0) {
+                System.out.println("Not enough money. Please provide more.");
+            } else {
+                System.out.println("===================================");
+                System.out.println("           CALCULATE CHANGE        ");
+                System.out.println("===================================");
+                System.out.println("Money Received: " + moneyReceived + " THB");
+                System.out.println("Price total: " + totalAmount + " THB");
+                System.out.println("Change: " + change + " THB");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+        }
+    }
+
+    public double getTotalAmount() {
+        double totalAmount = 0.0;
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            int quantity = quantities.get(i);
+            totalAmount += product.getPrice() * quantity;
+        }
+        return totalAmount;
+    }
+
     private void processTransaction() {
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
@@ -97,7 +135,9 @@ public class Transaction {
         String formattedDateTime = dateTime.format(formatter);
 
         StringBuilder billContent = new StringBuilder();
-        billContent.append("=== Transaction Bill ===\n");
+        System.out.println("===================================");
+        System.out.println("        TRANSACTION BILL     ");
+        System.out.println("===================================");
         billContent.append("Transaction ID: ").append(transactionId).append("\n");
         billContent.append("Employee: ").append(employee.getName()).append("\n");
         billContent.append("Date and Time: ").append(formattedDateTime).append("\n");
@@ -117,7 +157,7 @@ public class Transaction {
         }
 
         billContent.append("Grand Total: ").append(totalAmount).append(" THB\n");
-        billContent.append("==========================\n");
+        System.out.println("===================================");
 
         return billContent.toString();
     }
@@ -186,7 +226,7 @@ public class Transaction {
                     }
                 }
             }
-            
+
             if (!transactionsFound) {
                 System.out.println("No transactions found for the selected date: " + inputDate);
             }

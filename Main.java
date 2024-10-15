@@ -281,9 +281,6 @@ public class Main {
     }
 
     private static void displayAllEmployees(Employee[] employees) {
-        System.out.println("===================================");
-        System.out.println("           LIST EMPLOYEE        ");
-        System.out.println("===================================");
         if (employees.length == 0) {
             System.out.println("No employees available.");
         } else {
@@ -530,7 +527,7 @@ public class Main {
                     editProduct(scanner, products, category);
                     break;
                 case 4:
-                    viewProducts(products);
+                    viewProducts(products, 1);
                     break;
                 case 0:
                     backToMainMenu = true;
@@ -676,6 +673,7 @@ public class Main {
         System.out.println("===================================");
         System.out.println("          REMOVE PRODUCT        ");
         System.out.println("===================================");
+        viewProducts(products, 0);
         System.out.print("Enter Product ID to remove: ");
         String productId = scanner.nextLine();
 
@@ -700,7 +698,7 @@ public class Main {
         System.out.println("===================================");
         System.out.println("            EDIT PRODUCT           ");
         System.out.println("===================================");
-        viewProducts(products);
+        viewProducts(products, 0);
         System.out.print("Enter Product ID to edit: ");
         String productId = scanner.nextLine();
 
@@ -757,7 +755,8 @@ public class Main {
 
                 String newImportDate = "";
                 while (true) {
-                    System.out.print("Enter new import date (YYYY-MM-DD) or press Enter to keep current: " + product.getImportDate() + "): ");
+                    System.out.print("Enter new import date (YYYY-MM-DD) or press Enter to keep current: "
+                            + product.getImportDate() + "): ");
                     newImportDate = scanner.nextLine();
                     if (newImportDate.isEmpty()) {
                         break;
@@ -772,7 +771,8 @@ public class Main {
                 }
 
                 showCategories();
-                System.out.print("Enter Category ID or press Enter to keep current: " + product.getCategory().getCategoryName() + "): ");
+                System.out.print("Enter Category ID or press Enter to keep current: "
+                        + product.getCategory().getCategoryName() + "): ");
                 String categoryId = scanner.nextLine();
                 Category selectedCategory = null;
 
@@ -782,11 +782,13 @@ public class Main {
                         boolean isCategoryIdAlreadyExists = false;
 
                         while (newCategoryId.isEmpty() || isCategoryIdAlreadyExists) {
-                            System.out.print("Enter New Category ID (or press Enter to keep current: " + product.getCategory().getCategoryId() + "): ");
+                            System.out.print("Enter New Category ID (or press Enter to keep current: "
+                                    + product.getCategory().getCategoryId() + "): ");
                             newCategoryId = scanner.nextLine();
 
                             if (newCategoryId.isEmpty()) {
-                                System.out.println("Using the current category: " + product.getCategory().getCategoryName());
+                                System.out.println(
+                                        "Using the current category: " + product.getCategory().getCategoryName());
                                 selectedCategory = product.getCategory();
                                 break;
                             }
@@ -837,10 +839,12 @@ public class Main {
         System.out.println("Product not found.");
     }
 
-    private static void viewProducts(List<Product> products) {
-        System.out.println("===================================");
-        System.out.println("           VIEW PRODUCTS           ");
-        System.out.println("===================================");
+    private static void viewProducts(List<Product> products, int reason) {
+        if (reason != 1) {
+            System.out.println("===================================");
+            System.out.println("           VIEW PRODUCTS           ");
+            System.out.println("===================================");
+        }
         if (products.isEmpty()) {
             System.out.println("No products available.");
         } else {
@@ -868,13 +872,14 @@ public class Main {
         List<Integer> purchasedQuantities = new ArrayList<>();
 
         boolean continuePurchasing = true;
+        System.out.println("\nAvailable Products:");
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            System.out.println("Product ID: " + product.getProductId() + " | Name: " + product.getName()
+                    + " | Price: " + product.getPrice() + " THB | Stock: " + product.getStock());
+        }
         while (continuePurchasing) {
-            System.out.println("\nAvailable Products:");
-            for (Product product : products) {
-                System.out.println("Product ID: " + product.getProductId() + " | Name: " + product.getName()
-                        + " | Price: " + product.getPrice() + " THB | Stock: " + product.getStock());
-            }
-
+            System.out.println("======================================================================");
             Product selectedProduct = null;
             while (selectedProduct == null) {
                 System.out.print("Choose a product to purchase (by Product ID) or type 'done' to finish: ");
@@ -912,12 +917,14 @@ public class Main {
                             int index = purchasedProducts.indexOf(selectedProduct);
                             if (index != -1) {
                                 purchasedQuantities.set(index, purchasedQuantities.get(index) + quantity);
+                                selectedProduct.decreaseStock(quantity);
                             } else {
                                 selectedProduct.decreaseStock(quantity);
                                 purchasedProducts.add(selectedProduct);
                                 purchasedQuantities.add(quantity);
                             }
-                            System.out.println("Added to cart: " + quantity + " of " + selectedProduct.getName());
+                            System.out
+                                    .println("Added to transection: " + quantity + " of " + selectedProduct.getName());
                             validQuantity = true;
                         }
                     } catch (NumberFormatException e) {
@@ -932,8 +939,19 @@ public class Main {
             Transaction transaction = new Transaction(transactionId, employee, purchasedProducts, purchasedQuantities);
             clearScreen();
             System.out.println("");
+            System.out.print("Price Total Amount : " + transaction.getTotalAmount());
+            System.out.print("\nEnter Money Received: ");
+            String moneyReceived = scanner.nextLine();
+
+            transaction.calChange(moneyReceived);
+
+            System.out.println("\nPress Enter to view the bill...");
+            scanner.nextLine();
+            clearScreen();
             System.out.println(transaction.getBillContent());
+
             Product.updateProductsJson(products);
+
             System.out.println("Press Enter to return to the main menu...");
             scanner.nextLine();
         } else {
@@ -1047,6 +1065,7 @@ public class Main {
         boolean backToMainMenu = false;
 
         while (!backToMainMenu) {
+            clearScreen();
             System.out.println("===================================");
             System.out.println("         SHOW DAILY REPORT        ");
             System.out.println("===================================");
